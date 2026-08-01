@@ -1,0 +1,24 @@
+.footer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 0 4px;
+  gap: 12px;
+}
+
+.linkish {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+  border-bottom: 1px dotted var(--border);
+  padding: 0;
+}
+
+.linkish:hover {
+  color: var(--text);
+}

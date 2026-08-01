@@ -1,0 +1,113 @@
+:root {
+  --bg: #10141a;
+  --bg-panel: #171d26;
+  --bg-panel-alt: #1d2430;
+  --border: #2a3341;
+  --text: #e7e4da;
+  --text-muted: #8b93a3;
+  --humanity: #4fa6a0;
+  --rogue: #a6342e;
+  --defender: #6e7fd1;
+  --warn: #d9a741;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  padding: 20px;
+}
+
+a {
+  color: inherit;
+}
+
+.app-shell {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-panel);
+  padding: 18px;
+}
+
+.panel-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submit-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  background: var(--humanity);
+  color: #0a0c10;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 18px;
+  cursor: pointer;
+  text-transform: uppercase;
+  min-height: 44px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.submit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.error-banner {
+  border: 1px solid var(--rogue);
+  color: #f3e4e1;
+  background: var(--bg-panel);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+
+  .app-shell {
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+}

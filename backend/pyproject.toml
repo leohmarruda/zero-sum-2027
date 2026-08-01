@@ -1,0 +1,11 @@
+[project]
+name = "zero-sum-2027"
+version = "0.1.0"
+description = "Zero Sum 2027 — single-player turn-based AI chat wargame"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+pythonpath = ["."]

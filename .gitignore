@@ -1,0 +1,33 @@
+# Secrets / local env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+.venv/
+backend/.venv/
+*.db
+backend/dev.db
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+*.tsbuildinfo
+
+# Tooling / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,41 @@
+.move-panel textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 12px;
+  line-height: 1.5;
+}
+
+.move-panel textarea:focus {
+  outline: 2px solid var(--humanity);
+  outline-offset: 1px;
+  border-color: var(--humanity);
+}
+
+.move-panel textarea:disabled {
+  opacity: 0.55;
+}
+
+.move-panel textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.move-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  gap: 12px;
+}
+
+.char-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}

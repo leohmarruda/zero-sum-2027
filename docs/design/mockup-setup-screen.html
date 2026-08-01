@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Sum 2027 — Tela de Setup (mockup Pass B)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#10141A;
+    --bg-panel:#171D26;
+    --bg-panel-alt:#1D2430;
+    --border:#2A3341;
+    --text:#E7E4DA;
+    --text-muted:#8B93A3;
+    --humanity:#4FA6A0;
+    --rogue:#A6342E;
+    --defender:#6E7FD1;
+    --warn:#D9A741;
+    --dm:#D9A741;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--text); font-family:var(--sans); -webkit-font-smoothing:antialiased;}
+  body{min-height:100vh; padding:20px;}
+  .app{max-width:720px; margin:0 auto; display:flex; flex-direction:column; gap:16px;}
+
+  .status-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    border:1px solid var(--border); border-radius:6px;
+    background:var(--bg-panel); padding:14px 18px;
+  }
+  .wordmark{font-family:var(--mono); font-weight:700; font-size:15px; letter-spacing:0.12em;}
+  .wordmark span{color:var(--warn);}
+  .status-meta{font-family:var(--mono); font-size:11px; color:var(--text-muted); letter-spacing:0.04em;}
+
+  .hero{
+    border:1px solid var(--border); border-radius:6px; background:var(--bg-panel);
+    padding:22px 18px;
+  }
+  .hero h1{
+    font-family:var(--mono); font-size:18px; letter-spacing:0.06em; font-weight:600;
+    margin-bottom:8px;
+  }
+  .hero p{font-size:14px; line-height:1.55; color:var(--text-muted); max-width:38em;}
+
+  .panel{border:1px solid var(--border); border-radius:6px; background:var(--bg-panel); padding:18px;}
+  .panel-title{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.1em; color:var(--text-muted);
+    text-transform:uppercase; margin-bottom:14px;
+  }
+
+  .seat{
+    border:1px solid var(--border); border-radius:4px; background:var(--bg-panel-alt);
+    padding:14px; margin-bottom:12px;
+  }
+  .seat:last-child{margin-bottom:0;}
+  .seat-head{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    margin-bottom:12px;
+  }
+  .seat-role{
+    font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:0.06em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .dot{width:8px; height:8px; border-radius:2px;}
+  .dot.humanity{background:var(--humanity);}
+  .dot.rogue{background:var(--rogue);}
+  .dot.defender{background:var(--defender);}
+  .dot.dm{background:var(--dm);}
+  .seat-type{
+    font-family:var(--mono); font-size:10px; letter-spacing:0.08em;
+    color:var(--text-muted); border:1px solid var(--border); border-radius:999px;
+    padding:3px 10px;
+  }
+  .seat-type.human{color:var(--humanity); border-color:var(--humanity);}
+
+  .fields{display:grid; grid-template-columns:1fr 120px; gap:10px;}
+  label{display:flex; flex-direction:column; gap:6px; font-family:var(--mono); font-size:10px; letter-spacing:0.06em; color:var(--text-muted); text-transform:uppercase;}
+  input, select{
+    width:100%; background:var(--bg); border:1px solid var(--border); border-radius:4px;
+    color:var(--text); font-family:var(--sans); font-size:13px; padding:10px 12px;
+  }
+  input:focus, select:focus{outline:2px solid var(--humanity); outline-offset:1px; border-color:var(--humanity);}
+  .fields.disabled input, .fields.disabled select{opacity:0.45; pointer-events:none;}
+
+  .note{
+    font-family:var(--mono); font-size:10px; color:var(--text-muted); line-height:1.5;
+    margin-top:12px;
+  }
+
+  .actions{display:flex; justify-content:flex-end; gap:10px;}
+  .submit-btn{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.08em; font-weight:600;
+    background:var(--humanity); color:#0A0C10; border:none; border-radius:4px;
+    padding:12px 18px; cursor:pointer; text-transform:uppercase; min-height:44px;
+  }
+  .submit-btn:hover{filter:brightness(1.1);}
+
+  @media (max-width:480px){
+    body{padding:12px;}
+    .fields{grid-template-columns:1fr;}
+    .status-bar{flex-direction:column; align-items:flex-start; gap:8px;}
+    .seat-head{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="status-bar">
+    <div class="wordmark">ZERO SUM <span>2027</span></div>
+    <div class="status-meta">SETUP · PARTIDA SOLO</div>
+  </div>
+
+  <div class="hero">
+    <h1>Configurar assentos</h1>
+    <p>
+      MVP: você joga como Humanidade. Rogue AI, AI Defensora e DM são modelos
+      configuráveis. 1 turno = 1 mês a partir de 2027-01.
+    </p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Assentos</div>
+
+    <div class="seat">
+      <div class="seat-head">
+        <div class="seat-role"><span class="dot humanity"></span>HUMANIDADE</div>
+        <span class="seat-type human">HUMANO</span>
+      </div>
+      <p class="note">Assento fixo do jogador no MVP (Open Gate 2.13). Sem modelo LLM.</p>
+    </div>
+
+    <div class="seat">
+      <div class="seat-head">
+        <div class="seat-role"><span class="dot rogue"></span>ROGUE AI</div>
+        <span class="seat-type">IA</span>
+      </div>
+      <div class="fields">
+        <label>Modelo
+          <input value="openrouter/openai/gpt-4o-mini" />
+        </label>
+        <label>Temp
+          <input type="number" min="0" max="2" step="0.1" value="0.7" />
+        </label>
+      </div>
+    </div>
+
+    <div class="seat">
+      <div class="seat-head">
+        <div class="seat-role"><span class="dot defender"></span>AI DEFENSORA</div>
+        <span class="seat-type">IA</span>
+      </div>
+      <div class="fields">
+        <label>Modelo
+          <input value="openrouter/openai/gpt-4o-mini" />
+        </label>
+        <label>Temp
+          <input type="number" min="0" max="2" step="0.1" value="0.7" />
+        </label>
+      </div>
+    </div>
+
+    <div class="seat">
+      <div class="seat-head">
+        <div class="seat-role"><span class="dot dm"></span>DM</div>
+        <span class="seat-type">IA</span>
+      </div>
+      <div class="fields">
+        <label>Modelo
+          <input value="openrouter/openai/gpt-4o-mini" />
+        </label>
+        <label>Temp
+          <input type="number" min="0" max="2" step="0.1" value="0.4" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="submit-btn">Iniciar Partida</button>
+  </div>
+</div>
+</body>
+</html>

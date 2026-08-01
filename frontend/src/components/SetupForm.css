@@ -1,0 +1,139 @@
+.hero h1 {
+  font-family: var(--mono);
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.hero p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 38em;
+}
+
+.seat {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-panel-alt);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.seat:last-child {
+  margin-bottom: 0;
+}
+
+.seat-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.seat-role {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.dot.humanity {
+  background: var(--humanity);
+}
+
+.dot.rogue {
+  background: var(--rogue);
+}
+
+.dot.defender {
+  background: var(--defender);
+}
+
+.dot.dm {
+  background: var(--warn);
+}
+
+.seat-type {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.seat-type.human {
+  color: var(--humanity);
+  border-color: var(--humanity);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 10px;
+}
+
+.fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.fields input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
+.fields input:focus {
+  outline: 2px solid var(--humanity);
+  outline-offset: 1px;
+  border-color: var(--humanity);
+}
+
+.note {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+
+  .seat-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
