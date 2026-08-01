@@ -26,6 +26,8 @@ cd backend
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
+# optional: pip install -e "../../llmcall"
 copy ..\.env.example .env   # preencher OPENROUTER_API_KEY quando for usar LLM
 uvicorn app.main:app --reload
 ```

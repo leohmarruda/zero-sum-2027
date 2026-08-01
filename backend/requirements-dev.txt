@@ -1,0 +1,4 @@
+# Runtime deps are in pyproject.toml / requirements.txt.
+# Install test tools locally: pip install -e ".[dev]"
+pytest>=8.3.0
+pytest-asyncio>=0.24.0
