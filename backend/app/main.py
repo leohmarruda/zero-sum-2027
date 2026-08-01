@@ -27,15 +27,21 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="Zero Sum 2027", version="0.1.0", lifespan=lifespan)
+get_settings()  # load env early for CORS + downstream imports
+_cors_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=_cors_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 app.include_router(router, prefix=API_PREFIX)
 

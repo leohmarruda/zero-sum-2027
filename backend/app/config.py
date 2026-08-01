@@ -9,12 +9,9 @@ from pathlib import Path
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# backend/app/config.py → repo root
+# backend/app/config.py → repo root only
 _ROOT = Path(__file__).resolve().parents[2]
-_ENV_CANDIDATES = (
-    _ROOT / ".env",
-    Path(__file__).resolve().parents[1] / ".env",  # backend/.env
-)
+_ENV_FILE = _ROOT / ".env"
 
 _DEFAULT_DATABASE_URL = "sqlite+aiosqlite:///./dev.db"
 
@@ -28,7 +25,7 @@ def _looks_like_db_url(value: str) -> bool:
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=tuple(str(p) for p in _ENV_CANDIDATES if p.is_file()) or (".env",),
+        env_file=str(_ENV_FILE) if _ENV_FILE.is_file() else None,
         env_file_encoding="utf-8",
         extra="ignore",
     )

@@ -28,7 +28,7 @@ python -m venv .venv
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 # optional: pip install -e "../../llmcall"
-copy ..\.env.example .env   # preencher OPENROUTER_API_KEY quando for usar LLM
+# Use repo-root `.env` only (copy from `.env.example` at repo root)
 uvicorn app.main:app --reload
 ```
 
@@ -48,13 +48,11 @@ uvicorn app.main:app --reload
 ### Frontend
 ```bash
 cd frontend
-copy .env.example .env
 npm install
 npm run dev
 ```
-Abre `http://127.0.0.1:5173` — Setup → Iniciar → jogar turno 1 (API em `:8000/api`).
-
-Requires `OPENROUTER_API_KEY` in root `.env` for live LLM calls (tests use a stub).
+Requires `OPENROUTER_API_KEY` in the **repo-root** `.env` for live LLM calls.
 Optional local: `pip install -e ../../llmcall` (falls back to litellm on Vercel).
 
 Deploy (ambos no Vercel): ver `docs/deploy-vercel.md`.
+

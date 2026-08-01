@@ -10,8 +10,14 @@
     },
     "backend": {
       "root": "backend",
-      "entrypoint": "app.main:app",
-      "framework": "fastapi"
+      "framework": "fastapi",
+      "entrypoint": "main:app",
+      "installCommand": "pip install -r requirements.txt",
+      "functions": {
+        "main.py": {
+          "maxDuration": 60
+        }
+      }
     }
   },
   "rewrites": [

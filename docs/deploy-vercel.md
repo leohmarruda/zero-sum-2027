@@ -13,14 +13,16 @@ Set the Vercel project **Framework** to **Services**, then deploy from repo root
 | `TURSO_AUTH_TOKEN` | backend | With Turso |
 | `VITE_API_BASE` | frontend | Leave unset in prod (defaults to `/api`) |
 
-Python deps install from `backend/pyproject.toml` (`[project].dependencies`).
-Do not leave that list empty — Vercel prefers it over `requirements.txt`.
+Python deps: Vercel installs via the backend service `installCommand`
+(`pip install -r requirements.txt`). `pyproject.toml` only holds
+`[tool.vercel]` / pytest config so it does not steal install from an empty
+`[project]` table.
 
 ## Local
 
 - API: `http://127.0.0.1:8000/api/...`
-- UI: `VITE_API_BASE=http://127.0.0.1:8000/api` (see `frontend/.env.example`)
-- Tests: `pip install -r requirements-dev.txt` then `pytest`
+- UI: set `VITE_API_BASE=/api` in the **repo-root** `.env` (Vite `envDir`)
+- Single env file for backend + frontend: repo-root `.env` only
 
 ## Caveats
 
