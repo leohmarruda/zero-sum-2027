@@ -11,7 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app import models  # noqa: F401 — register ORM metadata
 from app.api.routes import router
 from app.config import get_settings
-from app.db import Base, engine
+from app.db import Base, get_engine
 from app.errors import AppError
 
 API_PREFIX = "/api"
@@ -21,7 +21,7 @@ API_PREFIX = "/api"
 async def lifespan(_app: FastAPI):
     get_settings()  # load .env + export OPENROUTER_API_KEY for llmcall
     # Dev convenience: create tables if missing. Alembic owns schema in real flows.
-    async with engine.begin() as conn:
+    async with get_engine().begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
 

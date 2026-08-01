@@ -59,12 +59,17 @@ class Settings(BaseSettings):
             return "dev"
         return "dev"
 
-    @field_validator("turso_database_url", "turso_auth_token", mode="before")
+    @field_validator(
+        "turso_database_url",
+        "turso_auth_token",
+        "openrouter_api_key",
+        mode="before",
+    )
     @classmethod
     def _blank_comments(cls, value: object) -> str:
         if value is None:
             return ""
-        text = str(value).strip()
+        text = str(value).strip().strip('"').strip("'")
         if not text or text.startswith("#"):
             return ""
         return text

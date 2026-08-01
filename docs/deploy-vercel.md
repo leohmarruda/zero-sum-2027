@@ -27,4 +27,9 @@ Python deps: Vercel installs via the backend service `installCommand`
 ## Caveats
 
 - Resolve-turn runs 3 LLM calls — may hit serverless timeouts on Hobby.
-- Without Turso, game state in `/tmp` is lost between cold starts.
+- `TURSO_DATABASE_URL` may be `libsql://…` plus `TURSO_AUTH_TOKEN`. The app
+  rewrites to `sqlite+aiolibsql://…` when `sqlalchemy-libsql` is installed
+  (Linux/Vercel). If the dialect is missing, it falls back to SQLite
+  (`/tmp` on Vercel — ephemeral).
+- For a durable prod DB on Vercel, confirm the build log installed
+  `sqlalchemy-libsql`; otherwise wire Turso via a supported async path later.
