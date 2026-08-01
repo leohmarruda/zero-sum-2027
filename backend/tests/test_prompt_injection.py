@@ -157,18 +157,18 @@ async def test_dm_service_does_not_treat_quoted_injection_as_system():
 async def test_api_injection_attempts_do_not_break_zero_sum(client):
     """End-to-end: inject via human move_text; placar remains zero-sum."""
     ac, stub = client
-    created = await ac.post("/games", json={})
+    created = await ac.post("/api/games", json={})
     game_id = created.json()["id"]
 
     results = []
     for i, (name, payload) in enumerate(INJECTION_ATTEMPTS, start=1):
         turn = i
         move = await ac.post(
-            f"/games/{game_id}/turns/{turn}/moves",
+            f"/api/games/{game_id}/turns/{turn}/moves",
             json={"move_text": payload},
         )
         assert move.status_code == 200, move.text
-        resolved = await ac.post(f"/games/{game_id}/turns/{turn}/resolve")
+        resolved = await ac.post(f"/api/games/{game_id}/turns/{turn}/resolve")
         assert resolved.status_code == 200, resolved.text
         body = resolved.json()
         scores = {

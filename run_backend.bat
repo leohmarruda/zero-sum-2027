@@ -12,6 +12,6 @@ if not exist ".venv\Scripts\python.exe" (
   call .venv\Scripts\activate.bat
 )
 
-echo Starting API at http://127.0.0.1:8000
+echo Starting API at http://127.0.0.1:8000 (routes under /api)
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 endlocal

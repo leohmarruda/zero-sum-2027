@@ -14,6 +14,8 @@ from app.config import get_settings
 from app.db import Base, engine
 from app.errors import AppError
 
+API_PREFIX = "/api"
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -35,7 +37,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(router)
+app.include_router(router, prefix=API_PREFIX)
 
 
 def _error_body(code: str, message: str) -> dict:
@@ -65,6 +67,6 @@ async def validation_exception_handler(_request: Request, exc: RequestValidation
     )
 
 
-@app.get("/health")
+@app.get(f"{API_PREFIX}/health")
 async def health():
     return {"status": "ok"}

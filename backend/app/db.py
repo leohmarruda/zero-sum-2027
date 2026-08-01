@@ -1,5 +1,8 @@
 """SQLAlchemy async engine and session factory."""
 
+from __future__ import annotations
+
+import os
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -18,8 +21,12 @@ class Base(DeclarativeBase):
 
 def _database_url() -> str:
     settings = get_settings()
+    # Vercel serverless FS is ephemeral; persist only under /tmp unless Turso is set.
+    if os.environ.get("VERCEL") and not (
+        settings.environment == "prod" and settings.turso_database_url
+    ):
+        return "sqlite+aiosqlite:////tmp/zero-sum.db"
     if settings.environment == "prod" and settings.turso_database_url:
-        # Turso/libSQL wiring lands when deploy is wired; SQLite for local.
         return settings.turso_database_url
     return settings.database_url
 

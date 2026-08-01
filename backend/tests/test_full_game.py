@@ -96,17 +96,17 @@ async def api_with_stub():
 
 
 async def _play_until_ended(ac: AsyncClient, max_turns: int = 60) -> dict:
-    created = await ac.post("/games", json={})
+    created = await ac.post("/api/games", json={})
     assert created.status_code == 200, created.text
     game_id = created.json()["id"]
     last = None
     for turn in range(1, max_turns + 1):
         move = await ac.post(
-            f"/games/{game_id}/turns/{turn}/moves",
+            f"/api/games/{game_id}/turns/{turn}/moves",
             json={"move_text": f"Humanity plan for turn {turn}."},
         )
         assert move.status_code == 200, move.text
-        resolved = await ac.post(f"/games/{game_id}/turns/{turn}/resolve")
+        resolved = await ac.post(f"/api/games/{game_id}/turns/{turn}/resolve")
         assert resolved.status_code == 200, resolved.text
         last = resolved.json()
         scores = {
@@ -146,7 +146,7 @@ async def test_full_game_draw_at_turn_cap(api_with_stub):
     assert result["winner"] is None
     assert result["final"]["game"]["status"] == "ended"
 
-    history = await ac.get(f"/games/{result['game_id']}/history")
+    history = await ac.get(f"/api/games/{result['game_id']}/history")
     assert history.status_code == 200
     turns = [h["turn_number"] for h in history.json()["history"]]
     assert turns[0] == 0
@@ -163,14 +163,14 @@ async def test_full_game_draw_at_turn_cap(api_with_stub):
 async def test_humanity_cannot_win_before_turn_30_even_with_streak(api_with_stub):
     stub = ScriptedDMStub(lambda _t: _shares(2.0, 2.0, 96.0))
     ac = api_with_stub(stub)
-    created = await ac.post("/games", json={})
+    created = await ac.post("/api/games", json={})
     game_id = created.json()["id"]
     for turn in range(1, 12):
         await ac.post(
-            f"/games/{game_id}/turns/{turn}/moves",
+            f"/api/games/{game_id}/turns/{turn}/moves",
             json={"move_text": "Push for dominance."},
         )
-        resolved = await ac.post(f"/games/{game_id}/turns/{turn}/resolve")
+        resolved = await ac.post(f"/api/games/{game_id}/turns/{turn}/resolve")
         body = resolved.json()
         scores = {
             role: CategoryScores(**vals)

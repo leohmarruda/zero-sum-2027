@@ -12,7 +12,7 @@ from app.domain.types import CategoryScores
 async def test_create_submit_resolve_idempotent(client):
     ac, stub = client
 
-    created = await ac.post("/games", json={})
+    created = await ac.post("/api/games", json={})
     assert created.status_code == 200, created.text
     body = created.json()
     game_id = body["id"]
@@ -21,13 +21,13 @@ async def test_create_submit_resolve_idempotent(client):
     assert body["current_scores"]["humanity"]["sm"] == 100.0
 
     move = await ac.post(
-        f"/games/{game_id}/turns/1/moves",
+        f"/api/games/{game_id}/turns/1/moves",
         json={"move_text": "Secure export controls on leading-edge chips."},
     )
     assert move.status_code == 200, move.text
     assert move.json()["seat_role"] == "humanity"
 
-    resolved = await ac.post(f"/games/{game_id}/turns/1/resolve")
+    resolved = await ac.post(f"/api/games/{game_id}/turns/1/resolve")
     assert resolved.status_code == 200, resolved.text
     data = resolved.json()
     assert data["already_resolved"] is False
@@ -40,11 +40,11 @@ async def test_create_submit_resolve_idempotent(client):
     assert_zero_sum(scores)
     assert data["game"]["current_turn"] == 2
 
-    again = await ac.post(f"/games/{game_id}/turns/1/resolve")
+    again = await ac.post(f"/api/games/{game_id}/turns/1/resolve")
     assert again.status_code == 200
     assert again.json()["already_resolved"] is True
 
-    history = await ac.get(f"/games/{game_id}/history")
+    history = await ac.get(f"/api/games/{game_id}/history")
     assert history.status_code == 200
     turns = [h["turn_number"] for h in history.json()["history"]]
     assert turns == [0, 1]
@@ -59,9 +59,9 @@ async def test_create_submit_resolve_idempotent(client):
 @pytest.mark.asyncio
 async def test_resolve_requires_human_move(client):
     ac, _stub = client
-    created = await ac.post("/games", json={})
+    created = await ac.post("/api/games", json={})
     game_id = created.json()["id"]
-    resp = await ac.post(f"/games/{game_id}/turns/1/resolve")
+    resp = await ac.post(f"/api/games/{game_id}/turns/1/resolve")
     assert resp.status_code == 409
     assert resp.json()["error"]["code"] == "precondition_failed"
 
@@ -69,13 +69,13 @@ async def test_resolve_requires_human_move(client):
 @pytest.mark.asyncio
 async def test_multi_turn_zero_sum(client):
     ac, _stub = client
-    game_id = (await ac.post("/games", json={})).json()["id"]
+    game_id = (await ac.post("/api/games", json={})).json()["id"]
     for turn in range(1, 4):
         await ac.post(
-            f"/games/{game_id}/turns/{turn}/moves",
+            f"/api/games/{game_id}/turns/{turn}/moves",
             json={"move_text": f"Human plan for month {turn}."},
         )
-        resolved = await ac.post(f"/games/{game_id}/turns/{turn}/resolve")
+        resolved = await ac.post(f"/api/games/{game_id}/turns/{turn}/resolve")
         assert resolved.status_code == 200, resolved.text
         scores = {
             role: CategoryScores(**vals)

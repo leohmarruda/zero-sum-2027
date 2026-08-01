@@ -30,7 +30,7 @@ copy ..\.env.example .env   # preencher OPENROUTER_API_KEY quando for usar LLM
 uvicorn app.main:app --reload
 ```
 
-Health check: `GET http://127.0.0.1:8000/health`
+Health check: `GET http://127.0.0.1:8000/api/health`
 
 Testes: `pytest` (domain + API turn loop + full game + cost dry_run + injection)
 
@@ -40,7 +40,7 @@ Testes: `pytest` (domain + API turn loop + full game + cost dry_run + injection)
 ```bash
 cd backend
 uvicorn app.main:app --reload
-# POST /games  →  POST /games/{id}/turns/1/moves  →  POST /games/{id}/turns/1/resolve
+# POST /api/games  →  POST /api/games/{id}/turns/1/moves  →  POST /api/games/{id}/turns/1/resolve
 ```
 
 ### Frontend
@@ -50,8 +50,9 @@ copy .env.example .env
 npm install
 npm run dev
 ```
-Abre `http://127.0.0.1:5173` — Setup → Iniciar → jogar turno 1 (API em `:8000`).
+Abre `http://127.0.0.1:5173` — Setup → Iniciar → jogar turno 1 (API em `:8000/api`).
 
-Requires `OPENROUTER_API_KEY` in backend `.env` for live LLM calls (tests use a stub).
+Requires `OPENROUTER_API_KEY` in root `.env` for live LLM calls (tests use a stub).
+Optional local: `pip install -e ../../llmcall` (falls back to litellm on Vercel).
 
-Install llmcall (sibling repo): `pip install -e ../../llmcall`
+Deploy (ambos no Vercel): ver `docs/deploy-vercel.md`.
