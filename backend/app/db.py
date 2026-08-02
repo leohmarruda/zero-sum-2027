@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.pool import NullPool
 
 from app.config import get_settings
 
@@ -59,9 +60,12 @@ def get_engine() -> AsyncEngine:
             # Registers the sqlite+aiolibsql dialect when installed.
             import sqlalchemy_libsql  # noqa: F401
 
+            # aiolibsql defaults to SingletonThreadPool (sync-only); NullPool
+            # works with asyncio and is correct for Vercel serverless.
             return create_async_engine(
                 _turso_async_url(turso),
                 echo=False,
+                poolclass=NullPool,
                 connect_args={"auth_token": token} if token else {},
             )
         except Exception as exc:  # noqa: BLE001 — missing dialect/wheels are common
