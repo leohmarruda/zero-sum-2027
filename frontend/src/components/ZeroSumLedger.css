@@ -1,9 +1,47 @@
 .legend {
   display: flex;
+  flex-wrap: wrap;
   gap: 14px;
   font-family: var(--mono);
   font-size: 10px;
   color: var(--text-muted);
+  max-width: 55%;
+  justify-content: flex-end;
+}
+
+.ledger-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.turn-nav {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.turn-nav-btn {
+  font-family: var(--mono);
+  font-size: 16px;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.turn-nav-btn:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.turn-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .legend-item {
@@ -18,17 +56,21 @@
   border-radius: 2px;
 }
 
-.swatch.humanity {
-  background: var(--humanity);
-}
-
-.swatch.rogue {
-  background: var(--rogue);
-}
-
-.swatch.defender {
-  background: var(--defender);
-}
+.swatch.hwg,
+.swatch.humanity { background: var(--hwg); }
+.swatch.selfish,
+.swatch.rogue { background: var(--selfish); }
+.swatch.protector,
+.swatch.defender { background: var(--defender); }
+.swatch.paperclip { background: var(--paperclip); }
+.swatch.paternalistic { background: var(--paternalistic); }
+.swatch.exterminator { background: var(--exterminator); }
+.swatch.us { background: var(--us); }
+.swatch.china { background: var(--china); }
+.swatch.eu { background: var(--eu); }
+.swatch.het { background: var(--het); }
+.swatch.aliens { background: var(--aliens); }
+.swatch.narrator { background: var(--narrator); }
 
 .ledger-row {
   margin-bottom: 14px;
@@ -52,6 +94,14 @@
   color: var(--text-muted);
 }
 
+.agg .delta.up {
+  color: #5fbf8a;
+}
+
+.agg .delta.down {
+  color: #e07a6f;
+}
+
 .ledger-track {
   height: 18px;
   border-radius: 3px;
@@ -73,19 +123,20 @@
   transition: width 0.3s ease;
 }
 
-.seg.humanity {
-  background: var(--humanity);
-}
-
-.seg.rogue {
-  background: var(--rogue);
-  color: #f3e4e1;
-}
-
-.seg.defender {
-  background: var(--defender);
-  color: #f0f1fa;
-}
+.seg.hwg,
+.seg.humanity { background: var(--hwg); }
+.seg.selfish,
+.seg.rogue { background: var(--selfish); color: #f3e4e1; }
+.seg.protector,
+.seg.defender { background: var(--defender); color: #f0f1fa; }
+.seg.paperclip { background: var(--paperclip); }
+.seg.paternalistic { background: var(--paternalistic); color: #f3eef8; }
+.seg.exterminator { background: var(--exterminator); color: #f3e4e1; }
+.seg.us { background: var(--us); color: #e8eef6; }
+.seg.china { background: var(--china); color: #f8eaea; }
+.seg.eu { background: var(--eu); color: #e8eef6; }
+.seg.het { background: var(--het); color: #f3ebe4; }
+.seg.aliens { background: var(--aliens); }
 
 @media (max-width: 480px) {
   .legend {

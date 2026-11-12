@@ -5,10 +5,21 @@
   --border: #2a3341;
   --text: #e7e4da;
   --text-muted: #8b93a3;
-  --humanity: #4fa6a0;
-  --rogue: #a6342e;
+  --hwg: #4fa6a0;
+  --humanity: var(--hwg);
+  --selfish: #a6342e;
   --defender: #6e7fd1;
-  --warn: #d9a741;
+  --protector: var(--defender);
+  --paperclip: #c47a3a;
+  --paternalistic: #8b6bb5;
+  --exterminator: #8b2e2e;
+  --us: #3d6ea8;
+  --china: #b54747;
+  --eu: #003399;
+  --het: #6b4c3b;
+  --aliens: #7a8f6b;
+  --narrator: #d9a741;
+  --warn: var(--narrator);
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
   --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -69,7 +80,7 @@ a {
   font-size: 11px;
   letter-spacing: 0.08em;
   font-weight: 600;
-  background: var(--humanity);
+  background: var(--hwg);
   color: #0a0c10;
   border: none;
   border-radius: 4px;
@@ -89,7 +100,7 @@ a {
 }
 
 .error-banner {
-  border: 1px solid var(--rogue);
+  border: 1px solid var(--selfish);
   color: #f3e4e1;
   background: var(--bg-panel);
   border-radius: 6px;

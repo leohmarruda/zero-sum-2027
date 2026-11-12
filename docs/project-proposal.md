@@ -1,5 +1,11 @@
 # Project Proposal — Zero Sum 2027
 
+> **Nota de evolução (2026-08-02):** o mecanismo de §1.3 abaixo descreve o
+> Minimal original (4 assentos fixos). A implementação atual usa um
+> **catálogo de facções** (default HWG + Defender AI + Selfish AI),
+> **Narrator** no lugar do DM, e **HWG** no lugar de Time Humanidade.
+> Fonte de verdade: `spec.md`, ADR-007, `app/domain/roles.py`.
+
 ## 1.1 Starting Point
 Ideia madura — trazida com estrutura já definida (4 assentos, turnos cegos,
 DM arbitra). Desenvolvida a partir daqui, sem reframe.

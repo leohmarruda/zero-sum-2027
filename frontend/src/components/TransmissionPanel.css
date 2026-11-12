@@ -13,11 +13,29 @@
   justify-content: space-between;
 }
 
+.transmission-question {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.transmission-question b {
+  color: var(--warn);
+  font-weight: 600;
+}
+
 .transmission-body {
   font-size: 14px;
   line-height: 1.6;
   color: var(--text);
   margin-bottom: 12px;
+  white-space: pre-wrap;
 }
 
 .transmission-feedback {

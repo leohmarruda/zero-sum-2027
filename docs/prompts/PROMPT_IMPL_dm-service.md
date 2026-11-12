@@ -8,16 +8,18 @@
 # move_text isolated as quoted narrative content (security task M2.14).
 #
 # Do:
-# - Request JSON: world_narrative, seat_feedback, per-category scores for
-#   rogue_ai/defender_ai/humanity.
+# - Request JSON: world_narrative, world_state_digest, seat_feedback,
+#   per-category scores for scored seats.
 # - Pass raw_llm_response through for persistence/audit.
 # - One retry on invalid JSON; then deterministic fallback (keep prior scores,
-#   generic "communication failure" narrative) — log as needed.
+#   generic "communication failure" narrative; preserve prior digest if any).
+# - Feed prior world_state_digest into the next adjudication (O(T) continuity).
 #
 # Don't:
 # - Let LiteLLM/OpenRouter types leak into domain or repositories.
 # - Concatenate human move_text into system instructions without quoting.
+# - Append raw month history to the Narrator prompt (O(T²) cost).
 #
 # Done when: unit/integration tests with stubbed llmcall return parsed
-# domain scores; injection attempts documented later via
+# domain scores + digest; injection attempts documented later via
 # PROMPT_SECURITY_prompt-injection.md.

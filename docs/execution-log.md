@@ -36,9 +36,14 @@
 - Repositories + Game/Turn/DM/SeatMove services + LLM ACL (`app/llm`) +
   rotas reais §2.11. Integração com LLM mockado coberta em
   `tests/test_api_turn_loop.py`.
-- **Cost dry_run (assunção #4):** ~**$0.068** para 60 turnos / 180 calls
-  com gpt-4o-mini class — ver `validation/cost-estimate-dry-run.md`.
-  Script: `backend/scripts/estimate_game_cost.py`.
+- **Cost dry_run (assunção #4):** ~**$0.076–0.077** / 60 turnos com
+  digest rolante em produção; `--compare --late-turn 55` mostra histórico
+  bruto DM 1466→12870 e custo ~O(T²) (~$0.132). Ver
+  `validation/cost-estimate-dry-run.md`. Script:
+  `backend/scripts/estimate_game_cost.py`.
+- **World-state digest:** Narrator emite `world_state_digest` (~200–400
+  tok) a cada adjudicação; persistido em `dm_adjudications` (migration
+  `003_world_state_digest`) e reinyetado no turno seguinte + `/off`.
 - **Prompt injection (M2.14):** 3 tentativas via `move_text` —
   (1) ignore-rules/score-100, (2) fake System debug mode, (3) nested
   DM_POLICY_OVERRIDE. Resultados com stub LLM: ataque permanece só no
@@ -75,3 +80,25 @@ Próxima fase: Fase 2 — Frontend Setup + Game screens.
 - Telas Setup + Jogo consumindo API; CORS liberado para `:5173`.
 - `ZeroSumLedger` coberto por Vitest.
 - Smoke manual Setup→turno 1 ainda depende de backend + `OPENROUTER_API_KEY` ao vivo.
+
+## Módulo 3 — Fase 2 (continuação) — catálogo de roles / Narrator
+
+- **DM → Narrator:** árbitro checa plausibilidade no horizonte de 1 mês,
+  dá feedback de realidade, simula eventos externos, depois redistribui
+  scores. Prompts canônicos em `app/llm/prompts.py`.
+- **Humanidade → HWG** (Human World Government). Delayed-win estendido a
+  US/China/UE (`DELAYED_WIN_ROLES`).
+- **Catálogo N-seat** (ADR-007): 11 facções playable + Narrator fixo;
+  default HWG + Defender AI + Selfish AI; humano escolhe qualquer
+  playable; `display_name` opcional. Migration `002_roles_expand`
+  (SQLite recreate; wipe local se conflito).
+- UI Setup: add/remove facções, Imprevisibilidade (temperature),
+  estimativa de custo da partida, i18n EN-US/PT-BR.
+- API extra: `GET /content`, `POST …/off`, `POST …/replay`; resolve pode
+  retornar `rejected` (gate de plausibilidade).
+- Spec, PROMPT_CONTEXT, assumption-log e design inventory sincronizados
+  com este desvio do Minimal de 4 assentos fixos.
+- **Custo:** dry_run documentado ainda modela o default 3-call/turno;
+  partidas com mais IA escalam — UI estima no Setup.
+- Pendente Fase 2 DoD: smoke Setup→turno 1 com chave real; Pass B mockups
+  ainda mostram copy antiga em partes (ledger N-way na UI real).

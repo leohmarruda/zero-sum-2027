@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from app.domain.types import (
     SCORE_CATEGORIES,
-    SCORED_ROLES,
     CategoryScores,
     ScoreCategory,
     ScoredRole,
@@ -12,12 +13,25 @@ from app.domain.types import (
 )
 
 
-def initial_scores() -> TurnScores:
-    """Turn 0 (2027-01-01) baseline from project-proposal §1.3."""
+def initial_scores(roles: Sequence[ScoredRole]) -> TurnScores:
+    """Turn 0 baseline. HWG (if present) starts near-total control; else equal split."""
+    roles = list(roles)
+    if not roles:
+        raise ValueError("at least one scored role required")
+
+    if "hwg" in roles:
+        raw: TurnScores = {}
+        for role in roles:
+            if role == "hwg":
+                raw[role] = CategoryScores(sm=100.0, rc=100.0, ic=100.0, pc=98.0, cs=100.0)
+            else:
+                raw[role] = CategoryScores(sm=0.0, rc=0.0, ic=0.0, pc=1.0, cs=0.0)
+        return normalize_turn_scores(raw, roles)
+
+    equal = 100.0 / len(roles)
     return {
-        "humanity": CategoryScores(sm=100.0, rc=100.0, ic=100.0, pc=98.0, cs=100.0),
-        "rogue_ai": CategoryScores(sm=0.0, rc=0.0, ic=0.0, pc=1.0, cs=0.0),
-        "defender_ai": CategoryScores(sm=0.0, rc=0.0, ic=0.0, pc=1.0, cs=0.0),
+        role: CategoryScores(sm=equal, rc=equal, ic=equal, pc=equal, cs=equal)
+        for role in roles
     }
 
 
@@ -27,38 +41,48 @@ def _clamp_non_negative(value: float) -> float:
 
 def normalize_category(
     raw: dict[ScoredRole, float],
+    roles: Sequence[ScoredRole],
 ) -> dict[ScoredRole, float]:
-    """Rescale three seat values so they sum to exactly 100.
+    """Rescale seat values so they sum to exactly 100.
 
     Degenerate cases (all zero / all negative after clamp): equal split.
     """
-    clamped = {role: _clamp_non_negative(raw.get(role, 0.0)) for role in SCORED_ROLES}
+    roles = list(roles)
+    clamped = {role: _clamp_non_negative(raw.get(role, 0.0)) for role in roles}
     total = sum(clamped.values())
     if total <= 0:
-        equal = 100.0 / 3.0
-        return {role: equal for role in SCORED_ROLES}
+        equal = 100.0 / len(roles)
+        return {role: equal for role in roles}
 
-    scaled = {role: (clamped[role] / total) * 100.0 for role in SCORED_ROLES}
+    scaled = {role: (clamped[role] / total) * 100.0 for role in roles}
     # Fix floating-point drift on the last role so sum is exactly 100.
-    others = SCORED_ROLES[0], SCORED_ROLES[1]
-    scaled[SCORED_ROLES[2]] = 100.0 - scaled[others[0]] - scaled[others[1]]
+    head = roles[:-1]
+    last = roles[-1]
+    scaled[last] = 100.0 - sum(scaled[r] for r in head)
     return scaled
 
 
-def normalize_turn_scores(raw: TurnScores | dict[ScoredRole, dict[ScoreCategory, float]]) -> TurnScores:
+def normalize_turn_scores(
+    raw: TurnScores | dict[ScoredRole, dict[ScoreCategory, float]],
+    roles: Sequence[ScoredRole] | None = None,
+) -> TurnScores:
     """Normalize every category independently so each sums to 100 across seats."""
+    if roles is None:
+        roles = list(raw.keys())
+    roles = list(roles)
+
     by_category: dict[ScoreCategory, dict[ScoredRole, float]] = {
         cat: {} for cat in SCORE_CATEGORIES
     }
 
-    for role in SCORED_ROLES:
+    for role in roles:
         seat = raw[role]
         values = seat.as_dict() if isinstance(seat, CategoryScores) else seat
         for cat in SCORE_CATEGORIES:
             by_category[cat][role] = float(values[cat])
 
     normalized_by_cat = {
-        cat: normalize_category(by_category[cat]) for cat in SCORE_CATEGORIES
+        cat: normalize_category(by_category[cat], roles) for cat in SCORE_CATEGORIES
     }
 
     return {
@@ -69,14 +93,20 @@ def normalize_turn_scores(raw: TurnScores | dict[ScoredRole, dict[ScoreCategory,
             pc=normalized_by_cat["pc"][role],
             cs=normalized_by_cat["cs"][role],
         )
-        for role in SCORED_ROLES
+        for role in roles
     }
 
 
-def assert_zero_sum(scores: TurnScores, *, tol: float = 1e-6) -> None:
+def assert_zero_sum(
+    scores: TurnScores,
+    roles: Sequence[ScoredRole] | None = None,
+    *,
+    tol: float = 1e-6,
+) -> None:
     """Raise AssertionError if any category does not sum to ~100."""
+    roles = list(roles) if roles is not None else list(scores.keys())
     for cat in SCORE_CATEGORIES:
-        total = sum(scores[role].as_dict()[cat] for role in SCORED_ROLES)
+        total = sum(scores[role].as_dict()[cat] for role in roles)
         if abs(total - 100.0) > tol:
             raise AssertionError(
                 f"category {cat} sums to {total}, expected 100 (±{tol})"

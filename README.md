@@ -1,11 +1,13 @@
-# [Nome provisório] — Rogue AI Chat Game
+# Zero Sum 2027
 
-> Nome definitivo será escolhido no Módulo 1.5. Este é um título de trabalho.
+Jogo de chat single-player em turnos: lineup configurável de facções,
+Narrator arbitra e redistribui um placar zero-sum de 5 categorias.
 
 ## Estado do projeto
-- **Fase atual:** Módulo 3 — **Fase 2 em andamento** (frontend Setup + Jogo). Fase 1 API concluída.
+- **Fase atual:** Módulo 3 — **Fase 2 em andamento** (frontend Setup + Jogo,
+  catálogo de roles, i18n EN/PT). Fase 1 API concluída.
 - **Effort tier (§0.3):** **Lite** — spike single-player, tempo curto, protótipo.
-- **Scope tier (§1.6):** Minimal.
+- **Scope tier (§1.6):** Minimal (expandido: N facções + Narrator; ver ADR-007).
 
 ## Compressões permitidas (tier Lite)
 - Pular 2D Passes B e C (ou documentar o skip em `execution-log.md`)

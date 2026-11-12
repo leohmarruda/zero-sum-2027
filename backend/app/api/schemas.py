@@ -7,10 +7,22 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-SeatRoleLiteral = Literal["rogue_ai", "defender_ai", "dm", "humanity"]
+SeatRoleLiteral = Literal[
+    "paperclip_max",
+    "selfish_ai",
+    "paternalistic_ai",
+    "defender_ai",
+    "exterminator_ai",
+    "hwg",
+    "us",
+    "china",
+    "eu",
+    "het",
+    "gray_aliens",
+    "narrator",
+]
 PlayerTypeLiteral = Literal["human", "ai"]
 GameStatusLiteral = Literal["setup", "in_progress", "ended"]
-ScoredRoleLiteral = Literal["rogue_ai", "defender_ai", "humanity"]
 
 
 class SeatIn(BaseModel):
@@ -18,10 +30,18 @@ class SeatIn(BaseModel):
     player_type: PlayerTypeLiteral
     model: str | None = None
     temperature: float | None = Field(default=None, ge=0.0, le=2.0)
+    display_name: str | None = Field(default=None, max_length=64)
 
 
 class CreateGameRequest(BaseModel):
     seats: list[SeatIn] | None = None
+    locale: str | None = None
+
+
+class ContentOut(BaseModel):
+    locale: str
+    setup_intro: str
+    narrator_intro_lines: dict[str, str]
 
 
 class SeatOut(BaseModel):
@@ -29,6 +49,7 @@ class SeatOut(BaseModel):
     player_type: PlayerTypeLiteral
     model: str | None
     temperature: float | None
+    display_name: str | None = None
 
 
 class CategoryScoresOut(BaseModel):
@@ -46,13 +67,29 @@ class GameOut(BaseModel):
     turn_cap: int
     humanity_win_turn: int
     winner: str | None
+    ending: str | None = None
+    epilogue: str | None = None
     ended_at: datetime | None
     seats: list[SeatOut]
-    current_scores: dict[ScoredRoleLiteral, CategoryScoresOut] | None = None
+    current_scores: dict[str, CategoryScoresOut] | None = None
+    narrator_intro: str | None = None
 
 
 class SubmitMoveRequest(BaseModel):
     move_text: str = Field(min_length=1)
+    locale: str | None = None
+
+
+class OffAskRequest(BaseModel):
+    move_text: str = Field(min_length=1)
+    locale: str | None = None
+
+
+class OffAskOut(BaseModel):
+    turn_number: int
+    seat_role: SeatRoleLiteral
+    question: str
+    answer: str
 
 
 class MoveOut(BaseModel):
@@ -64,6 +101,7 @@ class MoveOut(BaseModel):
 class AdjudicationOut(BaseModel):
     turn_number: int
     world_narrative: str
+    world_state_digest: str = ""
     seat_feedback: dict[str, str]
 
 
@@ -71,18 +109,22 @@ class TurnOut(BaseModel):
     turn_number: int
     moves: list[MoveOut]
     adjudication: AdjudicationOut | None
-    scores: dict[ScoredRoleLiteral, CategoryScoresOut] | None
+    scores: dict[str, CategoryScoresOut] | None
+    # seat role -> category -> signed change versus the previous turn's snapshot
+    deltas: dict[str, dict[str, float]] | None = None
 
 
 class ResolveOut(BaseModel):
     game: GameOut
     turn: TurnOut
     already_resolved: bool
+    rejected: bool = False
+    rejection_reason: str | None = None
 
 
 class HistoryPointOut(BaseModel):
     turn_number: int
-    scores: dict[ScoredRoleLiteral, CategoryScoresOut]
+    scores: dict[str, CategoryScoresOut]
 
 
 class HistoryOut(BaseModel):

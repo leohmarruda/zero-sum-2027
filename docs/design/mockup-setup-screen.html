@@ -91,7 +91,10 @@
     margin-top:12px;
   }
 
-  .actions{display:flex; justify-content:flex-end; gap:10px;}
+  .actions{display:flex; justify-content:flex-end; align-items:center; gap:16px;}
+  .cost-estimate{display:flex; flex-direction:column; align-items:flex-end; gap:2px; text-align:right;}
+  .cost-estimate-label{font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--text-muted); text-transform:uppercase;}
+  .cost-estimate-value{font-family:var(--mono); font-size:13px; letter-spacing:0.02em; color:var(--text);}
   .submit-btn{
     font-family:var(--mono); font-size:11px; letter-spacing:0.08em; font-weight:600;
     background:var(--humanity); color:#0A0C10; border:none; border-radius:4px;
@@ -117,7 +120,7 @@
   <div class="hero">
     <h1>Configurar assentos</h1>
     <p>
-      MVP: você joga como Humanidade. Rogue AI, AI Defensora e DM são modelos
+      MVP: você joga como Human World Government. Rogue AI, AI Defensora e Narrator são modelos
       configuráveis. 1 turno = 1 mês a partir de 2027-01.
     </p>
   </div>
@@ -127,7 +130,7 @@
 
     <div class="seat">
       <div class="seat-head">
-        <div class="seat-role"><span class="dot humanity"></span>HUMANIDADE</div>
+        <div class="seat-role"><span class="dot humanity"></span>HUMAN WORLD GOVERNMENT</div>
         <span class="seat-type human">HUMANO</span>
       </div>
       <p class="note">Assento fixo do jogador no MVP (Open Gate 2.13). Sem modelo LLM.</p>
@@ -165,7 +168,7 @@
 
     <div class="seat">
       <div class="seat-head">
-        <div class="seat-role"><span class="dot dm"></span>DM</div>
+        <div class="seat-role"><span class="dot dm"></span>NARRATOR</div>
         <span class="seat-type">IA</span>
       </div>
       <div class="fields">
@@ -180,6 +183,10 @@
   </div>
 
   <div class="actions">
+    <div class="cost-estimate">
+      <span class="cost-estimate-label">Custo est. de tokens</span>
+      <span class="cost-estimate-value">~$0.07 · 60 turnos</span>
+    </div>
     <button class="submit-btn">Iniciar Partida</button>
   </div>
 </div>

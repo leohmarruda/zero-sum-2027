@@ -1,5 +1,13 @@
-future features:
-- roles: paperclip maximizer, rogue AI, paternalistic AI, protector AI, killer AI, human world government, aliens, Narrator
-- allow names, Ai choose or default
-- imprevisibility (temperature)
-- database
+adicionar mais modelos
+
+melhorar conceito
+    esclarecer o que são cada dimensão ✓
+    pensar melhor na interdependencia das dimensoes
+
+UI
+    Starcraft/C&C inspired
+    gerar imagens
+    músicas mais dramáticas ou tranquilas
+
+future:
+- graph database

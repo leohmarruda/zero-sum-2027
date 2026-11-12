@@ -21,6 +21,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
 
 from app.db import Base
+from app.domain.roles import SeatRole
 
 
 class GameStatus(str, enum.Enum):
@@ -29,20 +30,19 @@ class GameStatus(str, enum.Enum):
     ended = "ended"
 
 
-class SeatRole(str, enum.Enum):
-    rogue_ai = "rogue_ai"
-    defender_ai = "defender_ai"
-    dm = "dm"
-    humanity = "humanity"
-
-
 class PlayerType(str, enum.Enum):
     human = "human"
     ai = "ai"
 
 
-SCORED_ROLES = (SeatRole.rogue_ai, SeatRole.defender_ai, SeatRole.humanity)
-SCORE_CATEGORIES = ("sm", "rc", "ic", "pc", "cs")
+SCORE_CATEGORIES = ("pc", "rc", "cs", "ic", "sm")
+
+_role_enum = Enum(
+    SeatRole,
+    values_callable=lambda obj: [e.value for e in obj],
+    native_enum=False,
+    length=32,
+)
 
 
 def _uuid() -> str:
@@ -63,6 +63,9 @@ class Game(Base):
     turn_cap: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
     humanity_win_turn: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
     winner: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    # Ending type key (see app.domain.endings) and the Narrator's closing epilogue.
+    ending: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    epilogue: Mapped[str | None] = mapped_column(Text, nullable=True)
     ended_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
@@ -87,8 +90,9 @@ class Seat(Base):
     game_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("games.id", ondelete="CASCADE"), nullable=False
     )
-    role: Mapped[SeatRole] = mapped_column(Enum(SeatRole), nullable=False)
+    role: Mapped[SeatRole] = mapped_column(_role_enum, nullable=False)
     player_type: Mapped[PlayerType] = mapped_column(Enum(PlayerType), nullable=False)
+    display_name: Mapped[str | None] = mapped_column(String(64), nullable=True)
     model: Mapped[str | None] = mapped_column(String(128), nullable=True)
     temperature: Mapped[float | None] = mapped_column(Float, nullable=True)
 
@@ -106,7 +110,7 @@ class TurnMove(Base):
         String(36), ForeignKey("games.id", ondelete="CASCADE"), nullable=False
     )
     turn_number: Mapped[int] = mapped_column(Integer, nullable=False)
-    seat_role: Mapped[SeatRole] = mapped_column(Enum(SeatRole), nullable=False)
+    seat_role: Mapped[SeatRole] = mapped_column(_role_enum, nullable=False)
     move_text: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -128,7 +132,7 @@ class ScoreSnapshot(Base):
         String(36), ForeignKey("games.id", ondelete="CASCADE"), nullable=False
     )
     turn_number: Mapped[int] = mapped_column(Integer, nullable=False)
-    seat_role: Mapped[SeatRole] = mapped_column(Enum(SeatRole), nullable=False)
+    seat_role: Mapped[SeatRole] = mapped_column(_role_enum, nullable=False)
     sm: Mapped[float] = mapped_column(Float, nullable=False)
     rc: Mapped[float] = mapped_column(Float, nullable=False)
     ic: Mapped[float] = mapped_column(Float, nullable=False)
@@ -150,6 +154,7 @@ class DMAdjudication(Base):
     )
     turn_number: Mapped[int] = mapped_column(Integer, nullable=False)
     world_narrative: Mapped[str] = mapped_column(Text, nullable=False)
+    world_state_digest: Mapped[str] = mapped_column(Text, nullable=False, default="")
     seat_feedback: Mapped[dict] = mapped_column(JSON, nullable=False)
     raw_llm_response: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(

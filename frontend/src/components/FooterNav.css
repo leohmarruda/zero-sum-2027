@@ -9,6 +9,10 @@
   gap: 12px;
 }
 
+.footer-nav-solo {
+  justify-content: flex-end;
+}
+
 .linkish {
   background: none;
   border: none;

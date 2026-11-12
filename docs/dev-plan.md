@@ -78,20 +78,20 @@ introduzidos aqui).
 **Depends on:** Fase 1 (API estável)
 
 **Tasks:**
-1. Scaffold React/Vite/Zustand; store de estado de partida.
-2. Tela de Setup: formulário de assentos (modelo/temperatura por IA,
-   escolha de assento humano — MVP: Humanidade sempre humana, ver spec §2.13).
-3. Tela de Jogo: implementar `StatusBar`, `ZeroSumLedger`,
-   `TransmissionPanel`, `MovePanel`, `FooterNav` a partir de
-   `design/mockup-game-screen.html` e `design/components.md`.
-4. 2D Pass B completa para a Tela de Setup (pendência documentada no
-   Módulo 2D) — fazer agora, antes de implementar.
+1. Scaffold React/Vite/Zustand; store de estado de partida. ✅
+2. Tela de Setup: lineup editável a partir do catálogo (ADR-007), assento
+   humano escolhível, nomes customizados, Imprevisibilidade, estimativa
+   de custo; i18n EN/PT. ✅ (superou o MVP “Humanidade fixa” de §2.13)
+3. Tela de Jogo: `StatusBar`, `ZeroSumLedger` (N segmentos),
+   `TransmissionPanel`, `MovePanel` (incl. `/off`), `FooterNav`. ✅
+4. 2D Pass B Setup (`mockup-setup-screen.html`) — feita; mockups ainda
+   parcialmente desatualizados vs. catálogo N-seat (ver design README).
 
-**Tests:** component tests (Vitest) para `ZeroSumLedger` (renderização
-correta de segmentos a partir de dados), smoke manual do fluxo Setup→Jogo.
+**Tests:** component tests (Vitest) para `ZeroSumLedger` + costEstimate;
+smoke manual do fluxo Setup→Jogo (pendente chave live).
 
 **Success Criteria:** usuário consegue configurar uma partida e jogar o
-turno 1 na UI real, vendo o placar e a narrativa do DM.
+turno 1 na UI real, vendo o placar e a narrativa do Narrator.
 
 **DoD Checklist:** Feature + Phase level (§3.1) — inclui checagem de drift
 de design (implementação vs. `/design/`).
@@ -105,6 +105,14 @@ de design (implementação vs. `/design/`).
 **Estimated effort:** S-M (1-3 sessões)
 
 **Depends on:** Fase 2
+
+**Entry criterion (dono: assunção #1 / Gate A):** revalidar arbitragem do
+Narrator com **N>3 facções pontuadas** (método barato: 5–10 turnos manuais
+ou fixture live, documentar em `/validation/`). Gate A atual só cobre 3
+facções; ADR-007 expôs N variável — sem esse gate, o placar visual da Fase
+3 embute um motor ainda não revalidado. Fechar também observação da
+assunção #5 (teto 60 sob diluição) se a partida de revalidação for longa o
+bastante.
 
 **Tasks:**
 1. Endpoint `/games/{id}/history` consumido por gráfico `recharts`
@@ -135,14 +143,21 @@ smoke-test manual cobrindo o fluxo completo.
 
 **Tasks:**
 1. Revisão responsiva de todas as telas em viewport mobile (~375px).
-2. Escrever `SMOKE_full-game-flow.md` em `/prompts/` — script manual
+2. Pixel art por estado de jogo: criar/integrar assets para os estados
+   principais (setup, turno em andamento/aguardando DM, vitória, empate,
+   erro/offline). Definir paleta e tamanho base, servir como assets
+   estáticos em `frontend/src/assets/pixelart/` com
+   `image-rendering: pixelated`, e componente único (ex.: `StateArt`)
+   que mapeia estado → sprite. Checar contraste/legibilidade em mobile e
+   registrar o estilo em `docs/design/` (drift de design).
+3. Escrever `SMOKE_full-game-flow.md` em `/prompts/` — script manual
    cobrindo setup → N turnos → fim de jogo (substitui CI, conforme ADR-006).
-3. Auditoria final: `decisions.md` e `patterns.md` completos; `README.md`
+4. Auditoria final: `decisions.md` e `patterns.md` completos; `README.md`
    atualizado com instruções de uso real.
-4. Revisitar item pendente do `2D.5` (workflow ponta a ponta em todas as
+5. Revisitar item pendente do `2D.5` (workflow ponta a ponta em todas as
    telas) e fechar oficialmente.
 
-**Tests:** smoke-test manual completo (script da task 2), rodado ao menos
+**Tests:** smoke-test manual completo (script da task 3), rodado ao menos
 1x do início ao fim.
 
 **Success Criteria:** success definition do Gate A satisfeita — partida
@@ -159,3 +174,10 @@ verificada explicitamente.
   `tests/test_full_game.py` (vitória no turno 10; empate no 60; invariante
   soma=100). Custo ~$0.068/60 turnos documentado. Sem mudança de escopo
   Minimal; live-LLM spot-check deferido.
+- **2026-08-02 — Gate A N>3 ancorado.** "Revalidar Gate A com N>3" deixou
+  de flutuar (ADR-007 / assumption-log / spec §2.17) e passou a ser
+  **critério de entrada da Fase 3**. Assunções #2/#3 marcadas Superseded
+  (testes pré-build; build já shipou 5 categorias + turnos cegos). #5
+  (teto 60) sobe prioridade pós-ADR-007.
+- **2026-11-11 — Pixel art por estado de jogo adicionada à Fase 4** (task
+  2; demais tasks renumeradas). Escopo visual apenas, sem impacto no backend.

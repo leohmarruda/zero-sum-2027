@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.domain.roles import NARRATOR_ROLE, SeatRole, is_playable
 from app.domain.types import CategoryScores, ScoredRole, TurnScores
 from app.models import (
     DMAdjudication,
@@ -16,7 +17,6 @@ from app.models import (
     PlayerType,
     ScoreSnapshot,
     Seat,
-    SeatRole,
     TurnMove,
 )
 
@@ -90,13 +90,13 @@ class GameRepository:
             return None
         out: TurnScores = {}
         for row in rows:
-            if row.seat_role.value not in ("rogue_ai", "defender_ai", "humanity"):
+            if not is_playable(row.seat_role):
                 continue
-            role: ScoredRole = row.seat_role.value  # type: ignore[assignment]
+            role: ScoredRole = row.seat_role.value
             out[role] = CategoryScores(
                 sm=row.sm, rc=row.rc, ic=row.ic, pc=row.pc, cs=row.cs
             )
-        return out if len(out) == 3 else None
+        return out or None
 
     async def list_score_history(self, game_id: str) -> list[tuple[int, TurnScores]]:
         """Return (turn_number, scores) ordered ascending, including turn 0."""
@@ -108,13 +108,14 @@ class GameRepository:
         result = await self._session.execute(stmt)
         by_turn: dict[int, TurnScores] = {}
         for row in result.scalars().all():
-            if row.seat_role.value not in ("rogue_ai", "defender_ai", "humanity"):
+            if not is_playable(row.seat_role):
                 continue
-            role: ScoredRole = row.seat_role.value  # type: ignore[assignment]
+            role: ScoredRole = row.seat_role.value
             by_turn.setdefault(row.turn_number, {})[role] = CategoryScores(
                 sm=row.sm, rc=row.rc, ic=row.ic, pc=row.pc, cs=row.cs
             )
-        return [(t, scores) for t, scores in sorted(by_turn.items()) if len(scores) == 3]
+        # Keep turns that have at least one scored seat (size may vary only if corrupt).
+        return [(t, scores) for t, scores in sorted(by_turn.items()) if scores]
 
     async def add_move(self, move: TurnMove) -> TurnMove:
         self._session.add(move)
@@ -142,6 +143,18 @@ class GameRepository:
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def delete_move(
+        self, game_id: str, turn_number: int, role: SeatRole
+    ) -> None:
+        await self._session.execute(
+            delete(TurnMove).where(
+                TurnMove.game_id == game_id,
+                TurnMove.turn_number == turn_number,
+                TurnMove.seat_role == role,
+            )
+        )
+        await self._session.flush()
+
     async def get_adjudication(
         self, game_id: str, turn_number: int
     ) -> DMAdjudication | None:
@@ -157,11 +170,50 @@ class GameRepository:
         await self._session.flush()
         return adj
 
+    async def delete_from_turn(self, game_id: str, from_turn: int) -> None:
+        """Remove moves, adjudications, and scores for turn >= from_turn (keep turn 0)."""
+        await self._session.execute(
+            delete(TurnMove).where(
+                TurnMove.game_id == game_id,
+                TurnMove.turn_number >= from_turn,
+            )
+        )
+        await self._session.execute(
+            delete(DMAdjudication).where(
+                DMAdjudication.game_id == game_id,
+                DMAdjudication.turn_number >= from_turn,
+            )
+        )
+        await self._session.execute(
+            delete(ScoreSnapshot).where(
+                ScoreSnapshot.game_id == game_id,
+                ScoreSnapshot.turn_number >= from_turn,
+            )
+        )
+        await self._session.flush()
+
+    async def reopen(self, game: Game, *, current_turn: int) -> Game:
+        game.status = GameStatus.in_progress
+        game.winner = None
+        game.ending = None
+        game.epilogue = None
+        game.ended_at = None
+        game.current_turn = current_turn
+        await self._session.flush()
+        return game
+
     async def mark_ended(
-        self, game: Game, *, winner: str | None
+        self,
+        game: Game,
+        *,
+        winner: str | None,
+        ending: str | None = None,
+        epilogue: str | None = None,
     ) -> Game:
         game.status = GameStatus.ended
         game.winner = winner
+        game.ending = ending
+        game.epilogue = epilogue
         game.ended_at = datetime.now(UTC)
         await self._session.flush()
         return game
@@ -179,6 +231,14 @@ def seat_by_role(game: Game, role: SeatRole) -> Seat | None:
 
 def human_seat(game: Game) -> Seat | None:
     for seat in game.seats:
-        if seat.player_type == PlayerType.human and seat.role != SeatRole.dm:
+        if seat.player_type == PlayerType.human and seat.role != NARRATOR_ROLE:
             return seat
     return None
+
+
+def playable_seats(game: Game) -> list[Seat]:
+    return [s for s in game.seats if s.role != NARRATOR_ROLE]
+
+
+def scored_role_keys(game: Game) -> list[str]:
+    return [s.role.value for s in playable_seats(game)]

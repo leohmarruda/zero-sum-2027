@@ -1,24 +1,45 @@
+import { useEffect, useState } from "react";
+import { getContent } from "../api/client";
 import { SetupForm } from "../components/SetupForm";
 import { StatusBar } from "../components/StatusBar";
+import { useLocaleStore } from "../i18n";
 import { useGameStore } from "../store/gameStore";
+
+const SETUP_INTRO_FALLBACK =
+  "This is a text-based RPG about the AGI, competition and survival in 2027.";
 
 export function SetupPage() {
   const seats = useGameStore((s) => s.seats);
   const resolving = useGameStore((s) => s.resolving);
   const error = useGameStore((s) => s.error);
-  const setSeatModel = useGameStore((s) => s.setSeatModel);
-  const setSeatTemp = useGameStore((s) => s.setSeatTemp);
+  const setSeats = useGameStore((s) => s.setSeats);
   const startGame = useGameStore((s) => s.startGame);
+  const locale = useLocaleStore((s) => s.locale);
+  const [setupIntro, setSetupIntro] = useState(SETUP_INTRO_FALLBACK);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getContent(locale)
+      .then((bundle) => {
+        if (!cancelled) setSetupIntro(bundle.setup_intro);
+      })
+      .catch(() => {
+        /* keep fallback */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [locale]);
 
   return (
     <div className="app-shell">
       <StatusBar status="setup" />
-      {error ? <div className="error-banner">{error}</div> : null}
       <SetupForm
         seats={seats}
         submitting={resolving}
-        onModelChange={setSeatModel}
-        onTempChange={setSeatTemp}
+        error={error}
+        setupIntro={setupIntro}
+        onChangeSeats={setSeats}
         onSubmit={() => void startGame()}
       />
     </div>

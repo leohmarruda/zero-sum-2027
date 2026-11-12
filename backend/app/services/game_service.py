@@ -6,18 +6,20 @@ from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.roles import (
+    DEFAULT_PLAYABLE_ROLES,
+    NARRATOR_ROLE,
+    PLAYABLE_ROLES,
+    SeatRole,
+)
 from app.domain.scoring import initial_scores
 from app.errors import AppError
-from app.models import Game, GameStatus, PlayerType, Seat, SeatRole
+from app.models import Game, GameStatus, PlayerType, Seat
 from app.repositories.game_repo import GameRepository
 
-
-REQUIRED_ROLES = (
-    SeatRole.rogue_ai,
-    SeatRole.defender_ai,
-    SeatRole.dm,
-    SeatRole.humanity,
-)
+DEFAULT_MODEL = "openrouter/openai/gpt-4o-mini"
+MIN_PLAYABLE_SEATS = 2
+MAX_PLAYABLE_SEATS = len(PLAYABLE_ROLES)
 
 
 @dataclass
@@ -26,6 +28,7 @@ class SeatConfig:
     player_type: PlayerType
     model: str | None = None
     temperature: float | None = None
+    display_name: str | None = None
 
 
 class GameService:
@@ -37,6 +40,9 @@ class GameService:
             seats = default_mvp_seats()
         _validate_seats(seats)
 
+        playable = [s for s in seats if s.role != NARRATOR_ROLE]
+        scored_roles = [s.role.value for s in playable]
+
         game = Game(
             status=GameStatus.in_progress,
             current_turn=1,
@@ -45,16 +51,18 @@ class GameService:
         )
         await self._repo.add(game)
         for cfg in seats:
+            name = (cfg.display_name or "").strip() or None
             await self._repo.add_seat(
                 Seat(
                     game_id=game.id,
                     role=cfg.role,
                     player_type=cfg.player_type,
+                    display_name=name,
                     model=cfg.model,
                     temperature=cfg.temperature,
                 )
             )
-        await self._repo.add_scores(game.id, 0, initial_scores())
+        await self._repo.add_scores(game.id, 0, initial_scores(scored_roles))
         await self._repo.commit()
         return await self._repo.get_or_raise(game.id)
 
@@ -63,37 +71,71 @@ class GameService:
 
 
 def default_mvp_seats() -> list[SeatConfig]:
-    """MVP: humanity human; rogue/defender/dm AI (Open Gate 2.13 provisional)."""
-    default_model = "openrouter/openai/gpt-4o-mini"
-    return [
-        SeatConfig(SeatRole.rogue_ai, PlayerType.ai, default_model, 0.7),
-        SeatConfig(SeatRole.defender_ai, PlayerType.ai, default_model, 0.7),
-        SeatConfig(SeatRole.dm, PlayerType.ai, default_model, 0.4),
-        SeatConfig(SeatRole.humanity, PlayerType.human, None, None),
-    ]
+    """Default: HWG (human) + Defender AI + Selfish AI + Narrator."""
+    seats: list[SeatConfig] = []
+    for role in DEFAULT_PLAYABLE_ROLES:
+        if role == SeatRole.hwg:
+            seats.append(SeatConfig(role, PlayerType.human, None, None))
+        else:
+            seats.append(SeatConfig(role, PlayerType.ai, DEFAULT_MODEL, 0.7))
+    seats.append(SeatConfig(NARRATOR_ROLE, PlayerType.ai, DEFAULT_MODEL, 0.4))
+    return seats
 
 
 def _validate_seats(seats: list[SeatConfig]) -> None:
-    roles = {s.role for s in seats}
-    missing = set(REQUIRED_ROLES) - roles
-    if missing:
+    if not seats:
+        raise AppError("validation_error", "seats required", status_code=422)
+
+    roles = [s.role for s in seats]
+    if len(roles) != len(set(roles)):
+        raise AppError("validation_error", "duplicate roles are not allowed", status_code=422)
+
+    if NARRATOR_ROLE not in roles:
+        raise AppError("validation_error", "Narrator seat is required", status_code=422)
+
+    narrators = [s for s in seats if s.role == NARRATOR_ROLE]
+    if len(narrators) != 1:
+        raise AppError("validation_error", "exactly one Narrator seat required", status_code=422)
+    if narrators[0].player_type != PlayerType.ai:
         raise AppError(
             "validation_error",
-            f"missing seats: {sorted(r.value for r in missing)}",
+            "Narrator must be an AI seat",
             status_code=422,
         )
-    if len(seats) != len(REQUIRED_ROLES):
-        raise AppError("validation_error", "exactly 4 seats required", status_code=422)
-    humans = [s for s in seats if s.player_type == PlayerType.human]
+
+    playable = [s for s in seats if s.role != NARRATOR_ROLE]
+    if len(playable) < MIN_PLAYABLE_SEATS:
+        raise AppError(
+            "validation_error",
+            f"at least {MIN_PLAYABLE_SEATS} playable seats required",
+            status_code=422,
+        )
+    if len(playable) > MAX_PLAYABLE_SEATS:
+        raise AppError(
+            "validation_error",
+            f"at most {MAX_PLAYABLE_SEATS} playable seats allowed",
+            status_code=422,
+        )
+    for seat in playable:
+        if seat.role not in PLAYABLE_ROLES:
+            raise AppError(
+                "validation_error",
+                f"unsupported playable role: {seat.role.value}",
+                status_code=422,
+            )
+
+    humans = [s for s in playable if s.player_type == PlayerType.human]
     if len(humans) != 1:
         raise AppError(
             "validation_error",
-            "exactly one human seat required in MVP",
+            "exactly one human playable seat required",
             status_code=422,
         )
-    if humans[0].role == SeatRole.dm:
-        raise AppError(
-            "validation_error",
-            "DM cannot be the human seat",
-            status_code=422,
-        )
+
+    for seat in seats:
+        if seat.display_name and len(seat.display_name.strip()) > 64:
+            raise AppError(
+                "validation_error",
+                "display_name must be at most 64 characters",
+                status_code=422,
+            )

@@ -17,22 +17,33 @@ from app.main import app
 
 
 class ScriptedDMStub:
-    """Seat moves are filler; DM scores come from `score_fn(turn) -> dict`."""
+    """Seat moves are filler; Narrator scores come from `score_fn(turn) -> dict`."""
 
     def __init__(self, score_fn):
         self.score_fn = score_fn
         self.resolve_count = 0
 
     async def complete(self, model, prompt, *, system=None, response_format="text", **kwargs):
-        if response_format == "json" or (system and "Dungeon Master" in (system or "")):
+        if system and "screening ONE human" in (system or ""):
+            return LLMOutput(
+                content=json.dumps({"accepted": True, "reason": ""}),
+                model=model,
+            )
+        if system and "closing EPILOGUE" in system:
+            return LLMOutput(content="Epilogue: the long month ends.", model=model)
+        if response_format == "json" or (system and "Narrator" in (system or "")):
             self.resolve_count += 1
             scores = self.score_fn(self.resolve_count)
             payload = {
                 "world_narrative": f"Month {self.resolve_count}: the board shifts.",
+                "world_state_digest": (
+                    f"Digest after month {self.resolve_count}: board in motion; "
+                    "compute race ongoing."
+                ),
                 "seat_feedback": {
-                    "rogue_ai": "Noted.",
+                    "selfish_ai": "Noted.",
                     "defender_ai": "Noted.",
-                    "humanity": "Noted.",
+                    "hwg": "Noted.",
                 },
                 "scores": scores,
             }
@@ -40,25 +51,24 @@ class ScriptedDMStub:
         return LLMOutput(content="AI acts this month.", model=model)
 
 
-def _shares(rogue: float, defender: float, humanity: float) -> dict:
-    """Uniform category shares (already sum to 100)."""
-    assert abs(rogue + defender + humanity - 100.0) < 1e-6
+def _shares(selfish: float, protector: float, hwg: float) -> dict:
+    assert abs(selfish + protector + hwg - 100.0) < 1e-6
     return {
-        "rogue_ai": {"sm": rogue, "rc": rogue, "ic": rogue, "pc": rogue, "cs": rogue},
+        "selfish_ai": {
+            "sm": selfish,
+            "rc": selfish,
+            "ic": selfish,
+            "pc": selfish,
+            "cs": selfish,
+        },
         "defender_ai": {
-            "sm": defender,
-            "rc": defender,
-            "ic": defender,
-            "pc": defender,
-            "cs": defender,
+            "sm": protector,
+            "rc": protector,
+            "ic": protector,
+            "pc": protector,
+            "cs": protector,
         },
-        "humanity": {
-            "sm": humanity,
-            "rc": humanity,
-            "ic": humanity,
-            "pc": humanity,
-            "cs": humanity,
-        },
+        "hwg": {"sm": hwg, "rc": hwg, "ic": hwg, "pc": hwg, "cs": hwg},
     }
 
 
@@ -71,8 +81,6 @@ async def api_with_stub():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    holders: dict = {"stub": None}
-
     async def _override_session():
         async with session_factory() as session:
             yield session
@@ -83,7 +91,6 @@ async def api_with_stub():
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
 
         def install(stub):
-            holders["stub"] = stub
             app.state.llm_client = stub
             return ac
 
@@ -103,7 +110,7 @@ async def _play_until_ended(ac: AsyncClient, max_turns: int = 60) -> dict:
     for turn in range(1, max_turns + 1):
         move = await ac.post(
             f"/api/games/{game_id}/turns/{turn}/moves",
-            json={"move_text": f"Humanity plan for turn {turn}."},
+            json={"move_text": f"HWG plan for turn {turn}."},
         )
         assert move.status_code == 200, move.text
         resolved = await ac.post(f"/api/games/{game_id}/turns/{turn}/resolve")
@@ -126,25 +133,28 @@ async def _play_until_ended(ac: AsyncClient, max_turns: int = 60) -> dict:
 
 
 @pytest.mark.asyncio
-async def test_full_game_rogue_wins_on_streak(api_with_stub):
-    # Rogue at 96% composite for 10 consecutive turns → win at turn 10.
+async def test_full_game_selfish_wins_on_streak(api_with_stub):
     stub = ScriptedDMStub(lambda _t: _shares(96.0, 2.0, 2.0))
     ac = api_with_stub(stub)
     result = await _play_until_ended(ac, max_turns=15)
     assert result["ended_on_turn"] == 10
-    assert result["winner"] == "rogue_ai"
+    assert result["winner"] == "selfish_ai"
     assert result["final"]["game"]["status"] == "ended"
+    assert result["final"]["game"]["ending"] == "hegemony"
+    assert result["final"]["game"]["epilogue"] == "Epilogue: the long month ends."
 
 
 @pytest.mark.asyncio
 async def test_full_game_draw_at_turn_cap(api_with_stub):
-    # Nobody reaches ≥0.9; game draws at turn 60.
-    stub = ScriptedDMStub(lambda _t: _shares(34.0, 33.0, 33.0))
+    # Selfish leads at 0.70: above the containment ceiling, below the win streak.
+    stub = ScriptedDMStub(lambda _t: _shares(70.0, 15.0, 15.0))
     ac = api_with_stub(stub)
     result = await _play_until_ended(ac, max_turns=60)
     assert result["ended_on_turn"] == 60
     assert result["winner"] is None
     assert result["final"]["game"]["status"] == "ended"
+    assert result["final"]["game"]["ending"] == "uneasy_hegemony"
+    assert result["final"]["game"]["epilogue"] == "Epilogue: the long month ends."
 
     history = await ac.get(f"/api/games/{result['game_id']}/history")
     assert history.status_code == 200
@@ -160,7 +170,7 @@ async def test_full_game_draw_at_turn_cap(api_with_stub):
 
 
 @pytest.mark.asyncio
-async def test_humanity_cannot_win_before_turn_30_even_with_streak(api_with_stub):
+async def test_hwg_cannot_win_before_turn_30_even_with_streak(api_with_stub):
     stub = ScriptedDMStub(lambda _t: _shares(2.0, 2.0, 96.0))
     ac = api_with_stub(stub)
     created = await ac.post("/api/games", json={})

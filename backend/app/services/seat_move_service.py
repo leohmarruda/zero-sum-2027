@@ -22,6 +22,9 @@ class SeatMoveService:
         prior_feedback: str | None,
         model: str = DEFAULT_SEAT_MODEL,
         temperature: float | None = 0.7,
+        display_name: str | None = None,
+        world_digest: str | None = None,
+        public_narrative: str | None = None,
     ) -> str:
         if role not in ROLE_BLURBS:
             raise ValueError(f"unsupported seat role for move gen: {role}")
@@ -31,6 +34,9 @@ class SeatMoveService:
             narrative_date=narrative_date_for_turn(turn_number),
             current_scores=current_scores,
             prior_feedback=prior_feedback,
+            display_name=display_name,
+            world_digest=world_digest,
+            public_narrative=public_narrative,
         )
         try:
             out = await self._llm.complete(

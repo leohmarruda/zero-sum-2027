@@ -36,10 +36,13 @@ Ver `components.md`.
       não funcional, só visual)
 
 ## 2D.6 Spec Sync
-Nenhuma divergência entre o mockup e `spec.md` §2.2/2.3/2.10 — o ledger
-zero-sum, a transmissão do DM com feedback individualizado, e o campo de
-jogada em texto livre mapeiam diretamente para os itens já descritos na
-spec. Nenhum ADR novo necessário por divergência de design.
+Mockups originais descreveram 3 facções + DM. A implementação (ADR-007)
+generalizou para N facções + Narrator; a UI real (`SetupForm`,
+`ZeroSumLedger`) é a fonte de verdade. Atualizar Pass B dos mockups antes
+do M4 se o drift visual importar para handoff — por ora aceitável em Lite.
+
+O ledger zero-sum, a transmissão do Narrator com feedback individualizado,
+e o campo de jogada em texto livre mapeiam para `spec.md` §2.2/2.3/2.10.
 
 ## 2D.8 Critical Evaluation (`PROMPT_CHALLENGE_DESIGN`, resumo)
 1. **Onde os defaults da ferramenta de IA guiaram o design em vez da

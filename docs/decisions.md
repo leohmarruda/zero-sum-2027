@@ -131,3 +131,75 @@ Consequences:      `execution-log.md` registra a ausência de CI como
                     script manual a ser escrito ao final da Fase 1.
 
 ---
+
+ADR-007
+Decision:          Catálogo de facções N-seat; DM→Narrator; Humanidade→HWG;
+                    roles como VARCHAR; `display_name` opcional; delayed-win
+                    para polities humanas (HWG/US/China/UE)
+Context:           Fase 2. O Minimal original (4 assentos fixos: Rogue /
+                    Defensora / DM / Humanidade) ficou curto para o wargame
+                    geopolítico pretendido. Usuário pediu lineup editável,
+                    nomes customizados, e reframe do árbitro (Narrator
+                    checa plausibilidade + eventos externos) e da facção
+                    humana (Human World Government).
+Pattern baseline:  Domain catalog (`app/domain/roles.py`) + ACL de prompts
+                    (`app/llm/prompts.py`); normalização N-way (ADR-004)
+Alternatives:      Manter 4 assentos fixos (rejeitado — pedido explícito);
+                    enum SQL rígido por role (rejeitado — migrações a cada
+                    facção nova); pesos de score por facção (adiado)
+Rationale:         Catálogo aberto com Narrator fora do placar preserva a
+                    invariante zero-sum e permite default jogável
+                    (HWG/DAI/SA) sem travar experimentação. VARCHAR +
+                    migration `002_roles_expand` evita churn de enum.
+Reversibility:     Costly (API keys e prompts já espalhados; downgrade
+                    recria enums antigos e perde dados locais)
+Consequences:      Spec/PROMPT_CONTEXT/assumption-log atualizados; custo
+                    por partida escala com N seats IA; Gate A de arbitragem
+                    foi validado com 3 facções — **revalidar N>3 é critério
+                    de entrada da Fase 3** (`dev-plan.md`); serviço ainda
+                    chamado `dm_service` / tabela `dm_adjudications`
+                    (renome cosmético adiado).
+
+---
+
+---
+
+ADR-008
+Decision:          Camada de profundidade de jogo: AIs veem o mundo público;
+                    deltas por turno; interdependência de categorias (prompt);
+                    eventos de mundo semeados; epílogo + tipo de final;
+                    vitória de contenção da Defender AI
+Context:           Revisão de design pós-ADR-007 para tornar partidas de 60
+                    turnos mais interessantes sem trair a proposta (chat
+                    turn-based, jogadas em texto livre, Narrator julga
+                    narrativamente, placar zero-sum de 5 categorias, turnos
+                    cegos, custo ~US$0,08/partida).
+Pattern baseline:  Funções puras em `app/domain/` (`events.py`,
+                    `transfers.py`, `endings.py`) + texto no ACL de prompts
+                    (`app/llm/prompts.py`); sem novas chamadas LLM por turno.
+Alternatives:      Teto de variação por turno (adiado — "momentum"); fog of
+                    war ligado a information control (adiado — exige
+                    filtragem server-side de moves/feedback); scoring
+                    determinístico (rejeitado — ver ADR-004); eventos
+                    gerados por LLM (rejeitado — custo e não-reprodutível).
+Rationale:         (1) Seats IA recebem digest + narrativa pública do mês
+                    anterior (nunca as jogadas do turno corrente).
+                    (2) `deltas` = score[t] − score[t−1], calculado no
+                    backend e exibido no ledger; Narrator é instruído a
+                    nomear transferências públicas. (3) Interdependência
+                    (cs/rc→pc, pc→sm, ic base de tudo, sm custa legitimidade)
+                    é regra de prompt, não código. (4) Evento = f(game_id,
+                    turno): ~20% dos turnos a partir do 3, nunca em turnos
+                    consecutivos, baralho de 12; replay/rewind reproduz os
+                    mesmos eventos; nada persistido. (5) 1 chamada extra no
+                    fim gera epílogo; `games.ending` + `games.epilogue`
+                    (migration `004_ending_epilogue`). (6) Contenção: se
+                    defender_ai está em jogo e nenhum assento passa de
+                    composite 0,60 nos últimos 10 turnos, ela vence no teto
+                    (em vez de empate), inclusive quando controlada por IA.
+Reversibility:     Easy (regras e prompts); migration 004 é reversível.
+Consequences:      Empate no teto ficou raro quando há Defender AI e o poder
+                    está distribuído — testes `test_draw_at_cap` /
+                    `test_full_game_draw_at_turn_cap` atualizados. Teto 0,60
+                    é palpite, a calibrar com partidas reais. Segue aberto:
+                    teto de momentum e fog of war.
