@@ -139,7 +139,6 @@ export function TheaterView() {
     <section className="panel theater">
       <div className="panel-title">
         <span>{t("game.theater")}</span>
-        <span className="theater-coords">01°17′N 103°51′E</span>
       </div>
       <canvas ref={ref} width={W} height={H} aria-hidden="true" />
     </section>

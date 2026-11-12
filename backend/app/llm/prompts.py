@@ -60,7 +60,7 @@ SEAT_ROLE_PROMPTS: dict[str, str] = {
         "industrial, and technological primacy in 2027."
     ),
     SeatRole.eu.value: (
-        "You represent the European Union (UE) — a major human power bloc "
+        "You represent the European Union (EU) — a major human power bloc "
         "competing for military, industrial, and technological primacy in 2027."
     ),
     SeatRole.het.value: (
@@ -270,7 +270,7 @@ SETUP_INTRO: dict[LocaleCode, str] = {
         "A text RPG game about AGI competition and humanity survival after 2027."
     ),
     "pt-BR": (
-        "Um RPG de texto sobre a competição pela AGI e a sobrevivência "
+        "Um RPG de texto sobre a competição com a AGI e a sobrevivência "
         "da humanidade após 2027."
     ),
 }

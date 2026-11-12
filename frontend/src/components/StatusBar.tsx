@@ -70,9 +70,7 @@ export function StatusBar({
       ? winner
         ? t("status.victory", { winner: winner.toUpperCase() })
         : t("status.draw")
-      : status === "in_progress"
-        ? t("status.inProgress")
-        : null;
+      : null;
 
   return (
     <header className="status-bar">

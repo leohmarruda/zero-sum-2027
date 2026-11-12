@@ -41,6 +41,13 @@
   font-style: italic;
   margin: 0;
   text-wrap: pretty;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .intro p {
+    white-space: normal;
+  }
 }
 
 .seat-count {
@@ -275,9 +282,18 @@ button.seat-type.take-seat:hover {
 }
 
 .add-row {
-  margin-top: 4px;
-  padding: 14px 18px;
-  border: 1px dashed var(--border-input);
+  margin: 8px 0 24px;
+  padding: 16px 18px;
+  border: 1px dashed rgba(240, 168, 60, 0.55);
+  background: rgba(240, 168, 60, 0.05);
+}
+
+.add-row .add-role {
+  color: var(--narrator);
+}
+
+.add-row .add-role select {
+  border-color: rgba(240, 168, 60, 0.45);
 }
 
 .add-role {

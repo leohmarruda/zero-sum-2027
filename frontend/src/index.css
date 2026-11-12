@@ -63,7 +63,7 @@ body {
   color: var(--text);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
-  padding: 20px 20px 40px;
+  padding: 20px 20px 0;
 }
 
 a {
@@ -263,7 +263,7 @@ input::placeholder {
   }
 
   body {
-    padding: 12px 12px 32px;
+    padding: 12px 12px 0;
   }
 
   .app-shell {
@@ -272,5 +272,11 @@ input::placeholder {
 }
 
 .app-shell {
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 20px);
+}
+
+@media (max-width: 480px) {
+  .app-shell {
+    min-height: calc(100vh - 12px);
+  }
 }

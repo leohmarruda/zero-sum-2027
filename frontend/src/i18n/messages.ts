@@ -174,8 +174,8 @@ const enUS: Messages = {
     "Going back to the start page abandons the game in progress. Your current game will be lost.",
   "brand.homeConfirm": "Leave game",
   "brand.homeStay": "Stay",
-  "setup.eyebrow": "// MISSION BRIEFING",
-  "game.theater": "Theater view",
+  "setup.eyebrow": "",
+  "game.theater": "Landscape",
   "status.ended": "ENDED",
   "status.victory": "VICTORY · {winner}",
   "status.draw": "DRAW",
@@ -199,7 +199,7 @@ const enUS: Messages = {
   "settings.storageFail":
     "Could not save in this browser (storage unavailable). Keys will not persist.",
 
-  "setup.title": "Configure seats",
+  "setup.title": "Configure roles",
   "setup.blurb":
     "Change or add more factions, pick your seat, set custom names, and tune Imprevisibility.",
   "setup.seats": "Participants",
@@ -227,14 +227,14 @@ const enUS: Messages = {
     "Rough USD for all AI seat moves + Narrator across a full game at gpt-4o-mini rates. Human seats are free. Early wins cost less.",
 
   "role.paperclip_max": "Paperclip Maximizer (PMAX)",
-  "role.selfish_ai": "Selfish AI",
+  "role.selfish_ai": "Selfish AI (SAI)",
   "role.paternalistic_ai": "Paternalistic AI (PAI)",
   "role.defender_ai": "Defender AI (DAI)",
   "role.exterminator_ai": "Exterminator AI (EAI)",
   "role.hwg": "Human World Government (HWG)",
   "role.us": "United States (US)",
-  "role.china": "China",
-  "role.eu": "European Union (UE)",
+  "role.china": "China (CH)",
+  "role.eu": "European Union (EU)",
   "role.het": "Human Extinction Terrorists (HET)",
   "role.gray_aliens": "Grey Aliens (GREYS)",
   "role.narrator": "Narrator",
@@ -292,13 +292,13 @@ const enUS: Messages = {
     "Capacity to impose outcomes by force or threat: armed forces, cyber offense, law enforcement, territorial control",
 
   "ledger.title": "Turn {turn} - {month} {year}",
-  "ledger.heading": "Dominion ledger",
+  "ledger.heading": "Dominion scoreboard",
   "ledger.turnLabel": "TURN",
 
-  "transmission.head": "NARRATOR TRANSMISSION — TURN {turn}",
-  "transmission.introHead": "NARRATOR TRANSMISSION — INTRO",
-  "transmission.offHead": "NARRATOR TRANSMISSION — /OFF",
-  "transmission.rejectHead": "NARRATOR TRANSMISSION — MOVE REJECTED",
+  "transmission.head": "NARRATOR — TURN {turn}",
+  "transmission.introHead": "NARRATOR — INTRO",
+  "transmission.offHead": "NARRATOR — /OFF",
+  "transmission.rejectHead": "NARRATOR — MOVE REJECTED",
   "transmission.rejectFallback":
     "That proposal is not plausible for a single month. Revise and try again.",
   "transmission.offQuestion": "Your question:",
@@ -310,7 +310,7 @@ const enUS: Messages = {
   "move.title": "Your move for the next turn ({month} {year})",
   "move.titleReplay": "Your move for turn {turn} ({month} {year})",
   "move.placeholder":
-    "Describe your action this turn… or start with /off to ask the Narrator a clarifying question.",
+    "Describe your next action, or start with /off to ask the Narrator",
   "move.submit": "Transmit Move",
   "move.offSubmit": "Ask Narrator",
   "move.offBadge": "/OFF",
@@ -331,7 +331,7 @@ const enUS: Messages = {
 
   "footer.backSetup": "← New game",
   "footer.turnsUntilEligible":
-    "{remaining} turns until HWG/US/China/UE victory eligibility",
+    "{remaining} turns until HWG/US/China/EU victory eligibility",
   "footer.eligible": "Governmental seats eligible for victory",
 
   "error.createGame": "Failed to create game",
@@ -361,8 +361,8 @@ const ptBR: Messages = {
     "Voltar à página inicial abandona a partida em andamento. A partida atual será perdida.",
   "brand.homeConfirm": "Sair da partida",
   "brand.homeStay": "Continuar",
-  "setup.eyebrow": "// BRIEFING DA MISSÃO",
-  "game.theater": "Visão do teatro",
+  "setup.eyebrow": "",
+  "game.theater": "Paisagem",
   "status.ended": "ENCERRADO",
   "status.victory": "VITÓRIA · {winner}",
   "status.draw": "EMPATE",
@@ -386,9 +386,9 @@ const ptBR: Messages = {
   "settings.storageFail":
     "Não foi possível salvar neste navegador (armazenamento indisponível). As chaves não vão persistir.",
 
-  "setup.title": "Configurar assentos",
+  "setup.title": "Configurar papéis",
   "setup.blurb":
-    "Altere ou adicione facções, escolha seu assento, defina nomes customizados e ajuste a Imprevisibilidade.",
+    "Altere ou adicione facções, escolha seu papel, defina nomes customizados e ajuste a Imprevisibilidade.",
   "setup.seats": "Participantes",
   "setup.model": "Modelo",
   "setup.modelCustom": "Personalizado…",
@@ -402,29 +402,29 @@ const ptBR: Messages = {
   "setup.playerHuman": "VOCÊ",
   "setup.playerAi": "IA",
   "setup.fixedRole": "Papel fixo",
-  "setup.takeSeat": "Assumir este assento",
+  "setup.takeSeat": "Assumir este papel",
   "setup.addRole": "Adicionar outro papel",
-  "setup.remove": "Remover assento",
+  "setup.remove": "Remover papel",
   "setup.noMoreRoles": "Todos os papéis estão em jogo",
   "setup.creating": "Criando…",
   "setup.start": "Iniciar Partida",
   "setup.estCost": "Custo de tokens",
   "setup.estCostValue": "~{cost} · {turns} turnos",
   "setup.estCostHint":
-    "USD aproximado para todos os movimentos de IA + Narrator em uma partida completa nas taxas do gpt-4o-mini. Assentos humanos não custam. Vitórias antecipadas custam menos.",
+    "USD aproximado para todos os movimentos de IA + Narrador em uma partida completa nas taxas do gpt-4o-mini. Papéis humanos não custam. Vitórias antecipadas custam menos.",
 
-  "role.paperclip_max": "Paperclip Maximizer (PMAX)",
-  "role.selfish_ai": "Selfish AI",
-  "role.paternalistic_ai": "Paternalistic AI (PAI)",
-  "role.defender_ai": "Defender AI (DAI)",
-  "role.exterminator_ai": "Exterminator AI (EAI)",
-  "role.hwg": "Human World Government (HWG)",
-  "role.us": "United States (US)",
-  "role.china": "China",
-  "role.eu": "European Union (UE)",
-  "role.het": "Human Extinction Terrorists (HET)",
-  "role.gray_aliens": "Grey Aliens (GREYS)",
-  "role.narrator": "Narrator",
+  "role.paperclip_max": "Maximizador de Clipes (PMAX)",
+  "role.selfish_ai": "IA Egoísta (SAI)",
+  "role.paternalistic_ai": "IA Paternalista (PAI)",
+  "role.defender_ai": "IA Defensora (DAI)",
+  "role.exterminator_ai": "IA Exterminadora (EAI)",
+  "role.hwg": "Governo Mundial Humano (HWG)",
+  "role.us": "Estados Unidos (US)",
+  "role.china": "China (CH)",
+  "role.eu": "União Europeia (EU)",
+  "role.het": "Terroristas da Extinção Humana (HET)",
+  "role.gray_aliens": "Aliens Cinzentos (GREYS)",
+  "role.narrator": "Narrador",
 
   "roleDesc.paperclip_max":
     "Maximizador de produção sem limites. Converte o mundo em recursos para cada vez mais clips.",
@@ -479,27 +479,27 @@ const ptBR: Messages = {
     "Capacidade de impor resultados por força ou ameaça: forças armadas, ciberofensiva, aplicação da lei, controle territorial",
 
   "ledger.title": "Turno {turn} - {month} {year}",
-  "ledger.heading": "Registro de domínio",
+  "ledger.heading": "Placar de domínio",
   "ledger.turnLabel": "TURNO",
 
-  "transmission.head": "TRANSMISSÃO NARRATOR — TURNO {turn}",
-  "transmission.introHead": "TRANSMISSÃO NARRATOR — INTRO",
-  "transmission.offHead": "TRANSMISSÃO NARRATOR — /OFF",
-  "transmission.rejectHead": "TRANSMISSÃO NARRATOR — JOGADA REJEITADA",
+  "transmission.head": "NARRADOR — TURNO {turn}",
+  "transmission.introHead": "NARRADOR — INTRO",
+  "transmission.offHead": "NARRADOR — /OFF",
+  "transmission.rejectHead": "NARRADOR — JOGADA REJEITADA",
   "transmission.rejectFallback":
     "Essa proposta não é plausível para um único mês. Revise e tente de novo.",
   "transmission.offQuestion": "Sua pergunta:",
   "transmission.feedbackLabel": "Relatório para {seat}:",
   "transmission.awaitingTitle": "Aguardando primeira transmissão",
   "transmission.awaitingBody":
-    "Envie a jogada do turno {turn} para o Narrator arbitrar o mês.",
+    "Envie a jogada do turno {turn} para o Narrador arbitrar o mês.",
 
   "move.title": "Sua jogada para o próximo turno ({month} {year})",
   "move.titleReplay": "Sua jogada do turno {turn} ({month} {year})",
   "move.placeholder":
-    "Descreva sua ação neste turno… ou comece com /off para perguntar ao Narrator.",
+    "Descreva sua próxima ação, ou comece com /off para perguntar ao Narrador",
   "move.submit": "Submeter Ação",
-  "move.offSubmit": "Perguntar ao Narrator",
+  "move.offSubmit": "Perguntar ao Narrador",
   "move.offBadge": "/OFF",
   "move.resolving": "Aguardando outros jogadores…({seconds})",
   "move.replaySubmit": "Substituir e Resolver",
@@ -518,12 +518,12 @@ const ptBR: Messages = {
 
   "footer.backSetup": "← Nova partida",
   "footer.turnsUntilEligible":
-    "{remaining} turnos até elegibilidade de vitória HWG/US/China/UE",
-  "footer.eligible": "Assentos governamentais elegíveis à vitória",
+    "{remaining} turnos até elegibilidade de vitória HWG/US/China/EU",
+  "footer.eligible": "Papéis governamentais elegíveis à vitória",
 
   "error.createGame": "Falha ao criar partida",
   "error.resolveTurn": "Falha ao resolver turno",
-  "error.offAsk": "Falha ao perguntar ao Narrator",
+  "error.offAsk": "Falha ao perguntar ao Narrador",
 
   "month.0": "JAN",
   "month.1": "FEV",

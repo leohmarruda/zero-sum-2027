@@ -62,7 +62,7 @@ def evaluate_outcome(
 ) -> GameOutcome:
     """Evaluate after a turn has been resolved and appended to history.
 
-    Delayed-win polities (HWG/US/China/UE) may only win from `humanity_win_turn`
+    Delayed-win polities (HWG/US/China/EU) may only win from `humanity_win_turn`
     onward. If multiple seats hit streak simultaneously, priority follows
     the `roles` order passed in (stable, documented).
     """

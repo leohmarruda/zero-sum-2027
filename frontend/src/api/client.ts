@@ -55,14 +55,14 @@ export const ROLE_CSS: Record<SeatRole, string> = {
 
 export const ROLE_SHORT: Record<PlayableRole, string> = {
   paperclip_max: "PMAX",
-  selfish_ai: "SA",
+  selfish_ai: "SAI",
   paternalistic_ai: "PAI",
   defender_ai: "DAI",
   exterminator_ai: "EAI",
   hwg: "HWG",
   us: "US",
-  china: "CN",
-  eu: "UE",
+  china: "CH",
+  eu: "EU",
   het: "HET",
   gray_aliens: "GREYS",
 };
