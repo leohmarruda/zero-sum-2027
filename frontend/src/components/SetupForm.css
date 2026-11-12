@@ -2,7 +2,8 @@
   font-size: 15px;
   line-height: 1.55;
   color: var(--text);
-  max-width: 40em;
+  font-style: italic;
+  text-align: justify;
   margin: 0;
 }
 
@@ -18,7 +19,7 @@
   font-size: 14px;
   line-height: 1.55;
   color: var(--text-muted);
-  max-width: 38em;
+  text-align: justify;
 }
 
 .seat {
@@ -45,6 +46,7 @@
   font-size: 13px;
   line-height: 1.45;
   color: var(--text-muted);
+  text-align: justify;
   margin: 0 0 12px;
 }
 

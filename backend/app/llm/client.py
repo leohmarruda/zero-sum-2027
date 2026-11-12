@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from typing import TYPE_CHECKING, Any, Literal
 
 from app.llm.types import LLMClientError, LLMOutput
@@ -31,6 +31,7 @@ async def _complete_via_litellm(
     response_format: Literal["text", "json"],
     timeout_seconds: float,
     dry_run: bool,
+    api_key: str | None = None,
 ) -> LLMOutput:
     if dry_run:
         return LLMOutput(content="", model=model, is_dry_run=True)
@@ -59,6 +60,8 @@ async def _complete_via_litellm(
         kwargs["max_tokens"] = max_tokens
     if response_format == "json":
         kwargs["response_format"] = {"type": "json_object"}
+    if api_key:
+        kwargs["api_key"] = api_key
 
     try:
         response = await acompletion(**kwargs)
@@ -68,11 +71,28 @@ async def _complete_via_litellm(
         raise LLMClientError("provider_error", str(exc)) from exc
 
 
-class LlmCallClient:
-    """Wraps llmcall.acall when available; otherwise litellm.acompletion."""
+API_KEY_PROVIDERS: frozenset[str] = frozenset({"openrouter", "openai", "anthropic"})
 
-    def __init__(self, acall_fn: AcallFn | None = None) -> None:
+
+class LlmCallClient:
+    """Wraps llmcall.acall when available; otherwise litellm.acompletion.
+
+    `api_keys` maps provider -> key for this client only (per request). The key is
+    chosen by the model's provider prefix and passed per call — never exported to
+    the process environment, so concurrent requests cannot see each other's keys.
+    """
+
+    def __init__(
+        self,
+        acall_fn: AcallFn | None = None,
+        api_keys: Mapping[str, str] | None = None,
+    ) -> None:
         self._acall = acall_fn
+        self._api_keys = dict(api_keys or {})
+
+    def _key_for(self, model: str) -> str | None:
+        provider = model.split("/", 1)[0].lower()
+        return self._api_keys.get(provider) or None
 
     async def complete(
         self,
@@ -86,6 +106,7 @@ class LlmCallClient:
         timeout_seconds: float = 60.0,
         dry_run: bool = False,
     ) -> LLMOutput:
+        api_key = self._key_for(model)
         acall_fn = self._acall if self._acall is not None else _import_acall()
         if acall_fn is None:
             return await _complete_via_litellm(
@@ -97,6 +118,7 @@ class LlmCallClient:
                 response_format=response_format,
                 timeout_seconds=timeout_seconds,
                 dry_run=dry_run,
+                api_key=api_key,
             )
 
         from llmcall.models import CallConstraints, LLMError
@@ -106,6 +128,7 @@ class LlmCallClient:
             max_tokens=max_tokens,
             timeout_seconds=timeout_seconds,
             response_format=response_format,
+            extra_params={"api_key": api_key} if api_key else None,
         )
         result = await acall_fn(
             model,

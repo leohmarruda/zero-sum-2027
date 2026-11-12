@@ -1,3 +1,5 @@
+import { apiKeyHeaders } from "../lib/apiKeys";
+
 export type PlayableRole =
   | "paperclip_max"
   | "selfish_ai"
@@ -143,8 +145,12 @@ const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...apiKeyHeaders(),
+      ...(init?.headers ?? {}),
+    },
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {

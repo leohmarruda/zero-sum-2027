@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import { LOCALES, LOCALE_LABELS, useLocaleStore } from "../i18n";
+import { SettingsModal } from "./SettingsModal";
 import "./StatusBar.css";
 
 interface Props {
@@ -32,6 +35,7 @@ export function StatusBar({ turnLabel, status, winner, onSettings }: Props) {
   const locale = useLocaleStore((s) => s.locale);
   const setLocale = useLocaleStore((s) => s.setLocale);
   const onSetup = status === "setup";
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const pill =
     status === "ended"
@@ -63,27 +67,26 @@ export function StatusBar({ turnLabel, status, winner, onSettings }: Props) {
         </div>
         {turnLabel ? <span>{turnLabel}</span> : null}
         {pill ? <span className={`pill pill-${status}`}>{pill}</span> : null}
-        {onSetup ? (
-          <span
-            className="settings-btn active"
-            aria-label={t("status.settings")}
-            title={t("status.settings")}
-            aria-current="page"
-          >
-            <SettingsIcon />
-          </span>
-        ) : onSettings ? (
-          <button
-            type="button"
-            className="settings-btn"
-            aria-label={t("status.settings")}
-            title={t("status.settings")}
-            onClick={onSettings}
-          >
-            <SettingsIcon />
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className="settings-btn"
+          aria-label={t("status.settings")}
+          title={t("status.settings")}
+          aria-haspopup="dialog"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <SettingsIcon />
+        </button>
       </div>
+      {settingsOpen
+        ? createPortal(
+            <SettingsModal
+              onClose={() => setSettingsOpen(false)}
+              onNewGame={onSetup ? undefined : onSettings}
+            />,
+            document.body,
+          )
+        : null}
     </header>
   );
 }

@@ -16,6 +16,20 @@ type Messages = {
   "status.endTurn": string;
   "status.turnMeta": string;
   "status.settings": string;
+  "settings.title": string;
+  "settings.language": string;
+  "settings.apiKeys": string;
+  "settings.apiKeysHint": string;
+  "settings.keyOpenrouter": string;
+  "settings.keyOpenai": string;
+  "settings.keyAnthropic": string;
+  "settings.show": string;
+  "settings.hide": string;
+  "settings.save": string;
+  "settings.cancel": string;
+  "settings.clearKeys": string;
+  "settings.newGame": string;
+  "settings.storageFail": string;
 
   "setup.title": string;
   "setup.blurb": string;
@@ -149,7 +163,23 @@ const enUS: Messages = {
   "status.draw": "DRAW",
   "status.endTurn": "END · TURN {turn}",
   "status.turnMeta": "TURN {turn} · {month} {year}",
-  "status.settings": "Settings / new game",
+  "status.settings": "Settings",
+  "settings.title": "Settings",
+  "settings.language": "Language",
+  "settings.apiKeys": "API keys",
+  "settings.apiKeysHint":
+    "Optional. Saved only in this browser and sent to the game server with each request, used for models from that provider. Leave blank to use the server's default key.",
+  "settings.keyOpenrouter": "OpenRouter",
+  "settings.keyOpenai": "OpenAI",
+  "settings.keyAnthropic": "Anthropic",
+  "settings.show": "Show",
+  "settings.hide": "Hide",
+  "settings.save": "Save",
+  "settings.cancel": "Cancel",
+  "settings.clearKeys": "Clear keys",
+  "settings.newGame": "← New game",
+  "settings.storageFail":
+    "Could not save in this browser (storage unavailable). Keys will not persist.",
 
   "setup.title": "Configure seats",
   "setup.blurb":
@@ -309,7 +339,23 @@ const ptBR: Messages = {
   "status.draw": "EMPATE",
   "status.endTurn": "FIM · TURNO {turn}",
   "status.turnMeta": "TURNO {turn} · {month} {year}",
-  "status.settings": "Configurações / nova partida",
+  "status.settings": "Configurações",
+  "settings.title": "Configurações",
+  "settings.language": "Idioma",
+  "settings.apiKeys": "Chaves de API",
+  "settings.apiKeysHint":
+    "Opcional. Ficam salvas só neste navegador e são enviadas ao servidor do jogo a cada requisição, para os modelos daquele provedor. Deixe em branco para usar a chave padrão do servidor.",
+  "settings.keyOpenrouter": "OpenRouter",
+  "settings.keyOpenai": "OpenAI",
+  "settings.keyAnthropic": "Anthropic",
+  "settings.show": "Mostrar",
+  "settings.hide": "Ocultar",
+  "settings.save": "Salvar",
+  "settings.cancel": "Cancelar",
+  "settings.clearKeys": "Limpar chaves",
+  "settings.newGame": "← Nova partida",
+  "settings.storageFail":
+    "Não foi possível salvar neste navegador (armazenamento indisponível). As chaves não vão persistir.",
 
   "setup.title": "Configurar assentos",
   "setup.blurb":
@@ -420,10 +466,10 @@ const ptBR: Messages = {
   "move.titleReplay": "Sua jogada do turno {turn} ({month} {year})",
   "move.placeholder":
     "Descreva sua ação neste turno… ou comece com /off para perguntar ao Narrator.",
-  "move.submit": "Transmitir Jogada",
+  "move.submit": "Submeter Ação",
   "move.offSubmit": "Perguntar ao Narrator",
   "move.offBadge": "/OFF",
-  "move.resolving": "Resolvendo…({seconds})",
+  "move.resolving": "Aguardando outros jogadores…({seconds})",
   "move.replaySubmit": "Substituir e Resolver",
 
   "game.endedTitle": "Partida encerrada",
@@ -513,13 +559,7 @@ export function roleHasDelayedWin(role: string): boolean {
 
 export function detectBrowserLocale(): Locale {
   if (typeof navigator === "undefined") return "en-US";
-  const langs = navigator.languages?.length
-    ? navigator.languages
-    : [navigator.language];
-  for (const lang of langs) {
-    const lower = lang.toLowerCase();
-    if (lower.startsWith("pt")) return "pt-BR";
-    if (lower.startsWith("en")) return "en-US";
-  }
-  return "en-US";
+  // Primary browser language: any Portuguese variant -> pt-BR, else en-US.
+  const primary = (navigator.languages?.[0] ?? navigator.language ?? "").toLowerCase();
+  return primary.startsWith("pt") ? "pt-BR" : "en-US";
 }

@@ -270,8 +270,8 @@ SETUP_INTRO: dict[LocaleCode, str] = {
         "This is a text-based RPG about the AGI, competition and survival in 2027."
     ),
     "pt-BR": (
-        "Este é um RPG de texto sobre a Inteligência Artificial Geral (AGI), "
-        "competição e sobrevivência em 2027."
+        "Um RPG de texto sobre a Inteligência Artificial Geral (AGI), "
+        "competição e sobrevivência da humanidade em 2027."
     ),
 }
 
