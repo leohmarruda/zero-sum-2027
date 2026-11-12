@@ -1,27 +1,43 @@
 :root {
-  --bg: #10141a;
-  --bg-panel: #171d26;
-  --bg-panel-alt: #1d2430;
-  --border: #2a3341;
-  --text: #e7e4da;
-  --text-muted: #8b93a3;
-  --hwg: #4fa6a0;
+  --bg: #07090b;
+  --bg-panel: #0d1215;
+  --bg-panel-alt: #0a0e11;
+  --bg-strip: #10171b;
+  --bg-input: #080b0d;
+  --border: #26323a;
+  --border-soft: #1d272e;
+  --border-input: #2b3740;
+  --text: #d9e1e4;
+  --text-strong: #e9eef0;
+  --text-muted: #9aa7af;
+  --text-dim: #64727b;
+
+  --hwg: #3fc2a8;
   --humanity: var(--hwg);
-  --selfish: #a6342e;
-  --defender: #6e7fd1;
+  --selfish: #e0504a;
+  --defender: #7b86f0;
   --protector: var(--defender);
-  --paperclip: #c47a3a;
-  --paternalistic: #8b6bb5;
-  --exterminator: #8b2e2e;
-  --us: #3d6ea8;
-  --china: #b54747;
-  --eu: #003399;
-  --het: #6b4c3b;
-  --aliens: #7a8f6b;
-  --narrator: #d9a741;
+  --paperclip: #e08a3c;
+  --paternalistic: #d17bb0;
+  --exterminator: #b8332e;
+  --us: #5aa7e6;
+  --china: #e6c84a;
+  --eu: #b47be6;
+  --het: #a8806a;
+  --aliens: #8fd16b;
+  --narrator: #f0a83c;
+  --narrator-hi: #ffc76b;
   --warn: var(--narrator);
-  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
-  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --danger: #e0504a;
+  --on-accent: #05110e;
+
+  --display: "Chakra Petch", ui-sans-serif, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --sans: "Barlow", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --cut: 14px;
+  --pad-x: 22px;
+  --pad-top: 18px;
 }
 
 * {
@@ -37,88 +53,224 @@ body,
 }
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(240, 168, 60, 0.08), transparent 55%),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 44px 44px, 44px 44px;
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
-  padding: 20px;
+  padding: 20px 20px 40px;
 }
 
 a {
-  color: inherit;
+  color: var(--narrator);
 }
 
+a:hover {
+  color: var(--narrator-hi);
+}
+
+select option {
+  background: #0e1316;
+  color: var(--text);
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: #55626b;
+}
+
+@keyframes zsPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Shared role colour + shape, consumed by .seat .dot .swatch .seg */
+:is(.seat, .dot, .swatch, .seg).hwg,
+:is(.seat, .dot, .swatch, .seg).humanity { --role: var(--hwg); --shape: none; }
+:is(.seat, .dot, .swatch, .seg).selfish,
+:is(.seat, .dot, .swatch, .seg).rogue { --role: var(--selfish); --shape: polygon(50% 0, 100% 100%, 0 100%); }
+:is(.seat, .dot, .swatch, .seg).protector,
+:is(.seat, .dot, .swatch, .seg).defender { --role: var(--defender); --shape: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+:is(.seat, .dot, .swatch, .seg).paperclip { --role: var(--paperclip); --shape: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%); }
+:is(.seat, .dot, .swatch, .seg).paternalistic { --role: var(--paternalistic); --shape: polygon(0 0, 100% 0, 50% 100%); }
+:is(.seat, .dot, .swatch, .seg).exterminator { --role: var(--exterminator); --shape: polygon(35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%, 0 35%, 35% 35%); }
+:is(.seat, .dot, .swatch, .seg).us { --role: var(--us); --shape: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); }
+:is(.seat, .dot, .swatch, .seg).china { --role: var(--china); --shape: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+:is(.seat, .dot, .swatch, .seg).eu { --role: var(--eu); --shape: circle(50%); }
+:is(.seat, .dot, .swatch, .seg).het { --role: var(--het); --shape: polygon(0 0, 100% 50%, 0 100%); }
+:is(.seat, .dot, .swatch, .seg).aliens { --role: var(--aliens); --shape: polygon(50% 0, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0 50%, 35% 35%); }
+:is(.seat, .dot, .swatch, .seg).narrator,
+:is(.seat, .dot, .swatch, .seg).dm { --role: var(--narrator); --shape: circle(50%); }
+
 .app-shell {
-  max-width: 720px;
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.panel {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-panel);
-  padding: 18px;
+/* Chamfered frame: outer shape = border colour, ::before = inset fill,
+   so the diagonal corners carry a border too. */
+.panel,
+.status-bar,
+.modal {
+  --cut: 14px;
+  --edge: var(--border);
+  --fill: var(--bg-panel);
+  position: relative;
+  isolation: isolate;
+  background: var(--edge);
+  clip-path: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
 }
 
+.panel::before,
+.status-bar::before,
+.modal::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--fill);
+  clip-path: polygon(
+    calc(var(--cut) - 0.6px) 0,
+    100% 0,
+    100% calc(100% - var(--cut) + 0.6px),
+    calc(100% - var(--cut) + 0.6px) 100%,
+    0 100%,
+    0 calc(var(--cut) - 0.6px)
+  );
+  pointer-events: none;
+}
+
+.panel {
+  padding: var(--pad-top) var(--pad-x) 22px;
+}
+
+/* Header strip with hatched filler (sits inside the 1px frame) */
 .panel-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  color: var(--text);
   text-transform: uppercase;
-  margin-bottom: 14px;
+  margin: calc(1px - var(--pad-top)) calc(1px - var(--pad-x)) 16px;
+  padding: 12px calc(var(--pad-x) - 1px);
+  background: var(--bg-strip);
+  border-bottom: 1px solid var(--border-soft);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 14px;
+  clip-path: polygon(calc(var(--cut) - 0.6px) 0, 100% 0, 100% 100%, 0 100%, 0 calc(var(--cut) - 0.6px));
+}
+
+.panel-title::after {
+  content: "";
+  order: 1;
+  flex: 1;
+  height: 10px;
+  background: repeating-linear-gradient(135deg, var(--border-soft) 0 6px, transparent 6px 12px);
+}
+
+.panel-title > :not(:first-child) {
+  order: 2;
 }
 
 .submit-btn {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  font-weight: 600;
-  background: var(--hwg);
-  color: #0a0c10;
+  font-family: var(--display);
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  background: var(--narrator);
+  color: #140c02;
   border: none;
-  border-radius: 4px;
-  padding: 12px 18px;
+  padding: 14px 28px;
   cursor: pointer;
   text-transform: uppercase;
   min-height: 44px;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
 }
 
 .submit-btn:hover:not(:disabled) {
-  filter: brightness(1.1);
+  background: var(--narrator-hi);
 }
 
 .submit-btn:disabled {
-  opacity: 0.45;
+  opacity: 1;
+  background: #16302c;
+  color: #3f6b63;
   cursor: not-allowed;
 }
 
 .error-banner {
-  border: 1px solid var(--selfish);
-  color: #f3e4e1;
-  background: var(--bg-panel);
-  border-radius: 6px;
+  border: 1px solid rgba(224, 80, 74, 0.5);
+  color: #f3d6d4;
+  background: rgba(224, 80, 74, 0.08);
   padding: 12px 14px;
   font-family: var(--mono);
   font-size: 12px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Game page: two columns on wide screens */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.game-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
 @media (max-width: 480px) {
+  :root {
+    --pad-x: 14px;
+    --pad-top: 14px;
+  }
+
   body {
-    padding: 12px;
+    padding: 12px 12px 32px;
   }
 
   .app-shell {
     gap: 12px;
   }
+}
 
-  .panel {
-    padding: 14px;
-  }
+.app-shell {
+  min-height: calc(100vh - 60px);
 }

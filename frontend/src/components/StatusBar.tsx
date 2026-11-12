@@ -1,10 +1,22 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { LOCALES, LOCALE_LABELS, useLocaleStore } from "../i18n";
+import { ConfirmModal } from "./ConfirmModal";
 import { SettingsModal } from "./SettingsModal";
 import "./StatusBar.css";
 
+export interface TurnNav {
+  turn: number;
+  /** e.g. "JAN 2027" */
+  monthYear: string;
+  canPrev: boolean;
+  canNext: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
 interface Props {
+  turnNav?: TurnNav;
   turnLabel?: string;
   status: "setup" | "in_progress" | "ended";
   winner?: string | null;
@@ -14,12 +26,12 @@ interface Props {
 function SettingsIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -30,12 +42,28 @@ function SettingsIcon() {
   );
 }
 
-export function StatusBar({ turnLabel, status, winner, onSettings }: Props) {
+export function StatusBar({
+  turnNav,
+  turnLabel,
+  status,
+  winner,
+  onSettings,
+}: Props) {
   const t = useLocaleStore((s) => s.t);
   const locale = useLocaleStore((s) => s.locale);
   const setLocale = useLocaleStore((s) => s.setLocale);
   const onSetup = status === "setup";
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [confirmHome, setConfirmHome] = useState(false);
+
+  // Logo -> start page. A game in progress must be confirmed first; on the
+  // setup screen (or a finished game) there is nothing to abandon.
+  const goHome = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    if (onSetup || !onSettings) return;
+    if (status === "ended") onSettings();
+    else setConfirmHome(true);
+  };
 
   const pill =
     status === "ended"
@@ -48,23 +76,61 @@ export function StatusBar({ turnLabel, status, winner, onSettings }: Props) {
 
   return (
     <header className="status-bar">
-      <div className="wordmark">
-        ZERO SUM <span>2027</span>
-      </div>
-      <div className="status-meta">
-        <div className="lang-switch" role="group" aria-label="Language">
-          {LOCALES.map((code) => (
-            <button
-              key={code}
-              type="button"
-              className={`lang-btn${locale === code ? " active" : ""}`}
-              aria-pressed={locale === code}
-              onClick={() => setLocale(code)}
-            >
-              {LOCALE_LABELS[code]}
-            </button>
-          ))}
+      <a className="brand" href="/" onClick={goHome} aria-label="Zero Sum 2027">
+        <span className="brand-mark" aria-hidden="true" />
+        <div className="brand-text">
+          <div className="wordmark">
+            ZERO SUM <span>2027</span>
+          </div>
+          <div className="tagline">{t("brand.tagline")}</div>
         </div>
+      </a>
+      {turnNav ? (
+        <div className="turn-nav-bar">
+          <button
+            type="button"
+            className="turn-nav-btn"
+            aria-label="Previous turn"
+            disabled={!turnNav.canPrev}
+            onClick={turnNav.onPrev}
+          >
+            ‹
+          </button>
+          <div className="turn-readout">
+            <div className="turn-kicker">{t("ledger.turnLabel")}</div>
+            <div className="turn-value">
+              {String(turnNav.turn).padStart(2, "0")}{" "}
+              <span>/ {turnNav.monthYear}</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="turn-nav-btn"
+            aria-label="Next turn"
+            disabled={!turnNav.canNext}
+            onClick={turnNav.onNext}
+          >
+            ›
+          </button>
+        </div>
+      ) : null}
+      <div className="status-spacer" />
+      <div className="status-meta">
+        {!turnNav ? (
+          <div className="lang-switch" role="group" aria-label="Language">
+            {LOCALES.map((code) => (
+              <button
+                key={code}
+                type="button"
+                className={`lang-btn${locale === code ? " active" : ""}`}
+                aria-pressed={locale === code}
+                onClick={() => setLocale(code)}
+              >
+                {LOCALE_LABELS[code]}
+              </button>
+            ))}
+          </div>
+        ) : null}
         {turnLabel ? <span>{turnLabel}</span> : null}
         {pill ? <span className={`pill pill-${status}`}>{pill}</span> : null}
         <button
@@ -78,6 +144,22 @@ export function StatusBar({ turnLabel, status, winner, onSettings }: Props) {
           <SettingsIcon />
         </button>
       </div>
+      {confirmHome && onSettings
+        ? createPortal(
+            <ConfirmModal
+              title={t("brand.homeTitle")}
+              body={t("brand.homeBody")}
+              confirmLabel={t("brand.homeConfirm")}
+              cancelLabel={t("brand.homeStay")}
+              onCancel={() => setConfirmHome(false)}
+              onConfirm={() => {
+                setConfirmHome(false);
+                onSettings();
+              }}
+            />,
+            document.body,
+          )
+        : null}
       {settingsOpen
         ? createPortal(
             <SettingsModal

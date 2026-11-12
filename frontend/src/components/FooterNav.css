@@ -3,14 +3,31 @@
   justify-content: space-between;
   align-items: center;
   font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: #7d8a93;
   padding: 0 4px;
   gap: 12px;
 }
 
 .footer-nav-solo {
   justify-content: flex-end;
+}
+
+.footer-nav .turn-pips {
+  display: inline-flex;
+  gap: 2px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.footer-nav .turn-pips i {
+  width: 4px;
+  height: 10px;
+  background: var(--border-soft);
+}
+
+.footer-nav .turn-pips i.on {
+  background: var(--narrator);
 }
 
 .linkish {

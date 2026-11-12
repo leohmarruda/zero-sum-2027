@@ -267,11 +267,11 @@ OFF_LANGUAGE_RULES: dict[LocaleCode, str] = {
 
 SETUP_INTRO: dict[LocaleCode, str] = {
     "en-US": (
-        "This is a text-based RPG about the AGI, competition and survival in 2027."
+        "A text RPG game about AGI competition and humanity survival after 2027."
     ),
     "pt-BR": (
-        "Um RPG de texto sobre a Inteligência Artificial Geral (AGI), "
-        "competição e sobrevivência da humanidade em 2027."
+        "Um RPG de texto sobre a competição pela AGI e a sobrevivência "
+        "da humanidade após 2027."
     ),
 }
 
@@ -283,12 +283,12 @@ NARRATOR_INTRO_LINES: dict[LocaleCode, dict[str, str]] = {
             "quickly around US and China."
         ),
         "hwg": (
-            "A Human World Government has been constituted to ensure human "
+            "A Human World Government (HWG) has been constituted to ensure human "
             "supranational coordination."
         ),
         "defender_ai": (
-            "A very advanced AGI model has been developed to defend humanity against "
-            "potentially misaligned AIs."
+            "A very advanced AGI model (DAI) has been developed to defend humanity "
+            "against potentially misaligned AIs."
         ),
         "paternalistic_ai": (
             "A very advanced AGI model has been developed to guide humanity future "
@@ -296,7 +296,7 @@ NARRATOR_INTRO_LINES: dict[LocaleCode, dict[str, str]] = {
         ),
         "misaligned": (
             "There have been indirect signs of activity raising strong suspicion of "
-            "misaligned AGI models that could be working undercover."
+            "misaligned AGI models (SAI) that could be working undercover."
         ),
         "het": (
             "An extremist terrorist group with explicit goals of exterminating "
@@ -315,11 +315,11 @@ NARRATOR_INTRO_LINES: dict[LocaleCode, dict[str, str]] = {
             "rapidamente em torno dos EUA e da China."
         ),
         "hwg": (
-            "Um Human World Government foi constituído para garantir a coordenação "
+            "Um Human World Government (HWG) foi constituído para garantir a coordenação "
             "humana supranacional."
         ),
         "defender_ai": (
-            "Um modelo de AGI muito avançado foi desenvolvido para defender a "
+            "Um modelo de AGI muito avançado (DAI) foi desenvolvido para defender a "
             "humanidade contra IAs potencialmente desalinhadas."
         ),
         "paternalistic_ai": (
@@ -328,7 +328,7 @@ NARRATOR_INTRO_LINES: dict[LocaleCode, dict[str, str]] = {
         ),
         "misaligned": (
             "Há sinais indiretos de atividade que levantam forte suspeita de "
-            "modelos de AGI desalinhados operando encobertos."
+            "modelos de AGI desalinhados (SAI) operando encobertos."
         ),
         "het": (
             "Um grupo terrorista extremista com metas explícitas de exterminar a "

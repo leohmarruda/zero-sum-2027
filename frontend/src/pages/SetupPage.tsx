@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { getContent } from "../api/client";
 import { SetupForm } from "../components/SetupForm";
+import { SiteFooter } from "../components/SiteFooter";
 import { StatusBar } from "../components/StatusBar";
 import { useLocaleStore } from "../i18n";
 import { useGameStore } from "../store/gameStore";
 
 const SETUP_INTRO_FALLBACK =
-  "This is a text-based RPG about the AGI, competition and survival in 2027.";
+  "A text RPG game about AGI competition and humanity survival after 2027.";
 
 export function SetupPage() {
   const seats = useGameStore((s) => s.seats);
@@ -42,6 +43,7 @@ export function SetupPage() {
         onChangeSeats={setSeats}
         onSubmit={() => void startGame()}
       />
+      <SiteFooter />
     </div>
   );
 }

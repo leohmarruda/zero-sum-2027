@@ -10,6 +10,13 @@ import type {
 import * as api from "../api/client";
 import { buildDefaultSeats } from "../components/SetupForm";
 import { t, useLocaleStore } from "../i18n";
+import {
+  clearSavedGame,
+  loadDraft,
+  loadGameId,
+  saveDraft,
+  saveGameId,
+} from "../lib/savedGame";
 
 type Screen = "setup" | "game";
 
@@ -27,15 +34,20 @@ interface GameState {
   moveDraft: string;
   moveSubmitted: boolean;
   resolving: boolean;
+  /** True while a saved game is being reloaded after a page refresh. */
+  restoring: boolean;
   error: string | null;
   setSeats: (seats: SeatConfig[]) => void;
   setMoveDraft: (text: string) => void;
   clearError: () => void;
   startGame: () => Promise<void>;
+  restoreGame: () => Promise<void>;
   submitAndResolve: () => Promise<void>;
   viewTurn: (turn: number) => Promise<void>;
   backToSetup: () => void;
 }
+
+let restoreStarted = false;
 
 function maxViewableTurn(game: Game): number {
   return Math.max(game.current_turn, 1);
@@ -54,11 +66,19 @@ export const useGameStore = create<GameState>((set, get) => ({
   moveDraft: "",
   moveSubmitted: false,
   resolving: false,
+  restoring: loadGameId() !== null,
   error: null,
 
   setSeats: (seats) => set({ seats }),
 
-  setMoveDraft: (text) => set({ moveDraft: text.slice(0, 800) }),
+  setMoveDraft: (text) => {
+    const draft = text.slice(0, 800);
+    set({ moveDraft: draft });
+    const { game, viewedTurn } = get();
+    if (game && game.status !== "ended" && viewedTurn === game.current_turn) {
+      saveDraft(game.id, game.current_turn, draft);
+    }
+  },
   clearError: () => set({ error: null }),
 
   startGame: async () => {
@@ -68,6 +88,8 @@ export const useGameStore = create<GameState>((set, get) => ({
         get().seats,
         useLocaleStore.getState().locale,
       );
+      clearSavedGame();
+      saveGameId(game.id);
       set({
         game,
         screen: "game",
@@ -89,6 +111,31 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
   },
 
+  restoreGame: async () => {
+    if (restoreStarted) return;
+    restoreStarted = true;
+    const id = loadGameId();
+    if (!id) {
+      set({ restoring: false });
+      return;
+    }
+    try {
+      const game = await api.getGame(id);
+      set({ game, screen: "game", viewedTurn: maxViewableTurn(game) });
+      await get().viewTurn(maxViewableTurn(game));
+      if (!get().error && game.status !== "ended") {
+        const draft = loadDraft(id, game.current_turn);
+        if (draft) set({ moveDraft: draft });
+      }
+    } catch {
+      // Game no longer exists (or server unreachable): fall back to setup.
+      clearSavedGame();
+      set({ game: null, screen: "setup" });
+    } finally {
+      set({ restoring: false });
+    }
+  },
+
   viewTurn: async (turn: number) => {
     const { game } = get();
     if (!game) return;
@@ -97,12 +144,16 @@ export const useGameStore = create<GameState>((set, get) => ({
     const humanRole =
       game.seats.find((s) => s.player_type === "human" && s.role !== "narrator")
         ?.role ?? "hwg";
-    const isCurrent =
-      target === game.current_turn && game.status !== "ended";
+    const isCurrent = target === game.current_turn && game.status !== "ended";
     const isEndedCurrent =
       target === game.current_turn && game.status === "ended";
 
-    set({ error: null, resolving: true, lastOffReply: null, lastRejection: null });
+    set({
+      error: null,
+      resolving: true,
+      lastOffReply: null,
+      lastRejection: null,
+    });
     try {
       // Turn 1 always shows the Narrator intro + initial scores.
       if (target === 1) {
@@ -201,7 +252,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
 
     const submittedText = moveDraft.trim();
-    set({ error: null, resolving: true, moveSubmitted: true, lastRejection: null });
+    set({
+      error: null,
+      resolving: true,
+      moveSubmitted: true,
+      lastRejection: null,
+    });
     try {
       if (isReplay) {
         const result = await api.replayTurn(
@@ -227,9 +283,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         }
         const nextTurn = result.game.current_turn;
         const prior =
-          nextTurn > viewedTurn
-            ? await api.getTurn(game.id, viewedTurn)
-            : null;
+          nextTurn > viewedTurn ? await api.getTurn(game.id, viewedTurn) : null;
         set({
           game: result.game,
           viewedTurn: nextTurn,
@@ -283,7 +337,8 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
   },
 
-  backToSetup: () =>
+  backToSetup: () => {
+    clearSavedGame();
     set({
       screen: "setup",
       game: null,
@@ -296,5 +351,6 @@ export const useGameStore = create<GameState>((set, get) => ({
       moveDraft: "",
       moveSubmitted: false,
       error: null,
-    }),
+    });
+  },
 }));

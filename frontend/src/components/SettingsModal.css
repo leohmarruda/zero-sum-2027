@@ -1,7 +1,8 @@
 .settings-modal {
-  width: min(480px, 100%);
+  width: min(560px, 100%);
   max-height: calc(100vh - 40px);
   overflow-y: auto;
+  gap: 18px;
 }
 
 .settings-section {
@@ -15,30 +16,31 @@
 }
 
 .settings-modal .lang-btn {
-  font-size: 9px;
-  padding: 2px 7px;
-  min-height: 22px;
+  font-size: 12px;
+  padding: 8px 16px;
 }
 
 .settings-label {
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 .settings-hint {
   margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--text-muted);
+  text-wrap: pretty;
 }
 
 .settings-key-name {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.06em;
 }
 
 .settings-key-row {
@@ -52,6 +54,13 @@
   min-width: 0;
 }
 
+.settings-key-row .modal-btn {
+  width: 70px;
+  padding: 0;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+
 .settings-side-actions {
   display: flex;
   align-items: center;
@@ -59,8 +68,17 @@
   flex-wrap: wrap;
 }
 
+.settings-side-actions .modal-btn.ghost {
+  color: var(--danger);
+  border-color: rgba(224, 80, 74, 0.45);
+}
+
+.settings-side-actions .modal-btn.ghost:hover {
+  background: rgba(224, 80, 74, 0.12);
+}
+
 .settings-error {
   margin: 0;
-  font-size: 12px;
-  color: var(--exterminator);
+  font-size: 13px;
+  color: var(--danger);
 }

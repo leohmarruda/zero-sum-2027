@@ -1,6 +1,8 @@
 import { FooterNav } from "../components/FooterNav";
 import { MovePanel } from "../components/MovePanel";
+import { SiteFooter } from "../components/SiteFooter";
 import { StatusBar } from "../components/StatusBar";
+import { TheaterView } from "../components/TheaterView";
 import { TransmissionPanel } from "../components/TransmissionPanel";
 import { ZeroSumLedger } from "../components/ZeroSumLedger";
 import { isOffDraft } from "../api/client";
@@ -60,11 +62,11 @@ export function GamePage() {
   const isReplayView = !isCurrentView;
 
   const humanSeat =
-    game.seats.find((s) => s.player_type === "human" && s.role !== "narrator") ??
-    null;
+    game.seats.find(
+      (s) => s.player_type === "human" && s.role !== "narrator",
+    ) ?? null;
   const humanRole = humanSeat?.role ?? "hwg";
-  const humanLabel =
-    humanSeat?.display_name || t(roleMessageKey(humanRole));
+  const humanLabel = humanSeat?.display_name || t(roleMessageKey(humanRole));
 
   const displayNames = Object.fromEntries(
     game.seats.map((s) => [s.role, s.display_name]),
@@ -100,127 +102,137 @@ export function GamePage() {
         status={game.status}
         winner={winnerLabel}
         onSettings={backToSetup}
+        turnNav={{
+          turn: viewedTurn,
+          monthYear: `${ledgerMonth.toUpperCase()} ${ledgerCal.year}`,
+          canPrev: viewedTurn > 1,
+          canNext: viewedTurn < maxTurn,
+          onPrev: () => void viewTurn(viewedTurn - 1),
+          onNext: () => void viewTurn(viewedTurn + 1),
+        }}
       />
       {error ? <div className="error-banner">{error}</div> : null}
 
-      {scores ? (
-        <ZeroSumLedger
-          title={t("ledger.title", {
-            turn: viewedTurn,
-            month: ledgerMonth,
-            year: ledgerCal.year,
-          })}
-          scores={scores}
-          deltas={viewedDeltas}
-          displayNames={displayNames}
-          canGoPrev={viewedTurn > 1}
-          canGoNext={viewedTurn < maxTurn}
-          onPrev={() => void viewTurn(viewedTurn - 1)}
-          onNext={() => void viewTurn(viewedTurn + 1)}
-        />
-      ) : null}
+      <div className="game-grid">
+        <div className="game-col">
+          <TheaterView />
 
-      {showIntro ? (
-        <TransmissionPanel
-          headLabel={t("transmission.introHead")}
-          dateLabel={narrativeDate(1)}
-          narrative={
-            game.narrator_intro ??
-            t("transmission.awaitingBody", { turn: game.current_turn })
-          }
-        />
-      ) : lastAdjudication ? (
-        <TransmissionPanel
-          turnNumber={viewedTurn}
-          dateLabel={narrativeDate(viewedTurn)}
-          narrative={lastAdjudication.world_narrative}
-          feedback={lastAdjudication.seat_feedback[humanRole]}
-          feedbackSeatLabel={humanLabel}
-        />
-      ) : null}
-
-      {lastRejection ? (
-        <TransmissionPanel
-          headLabel={t("transmission.rejectHead")}
-          dateLabel={narrativeDate(game.current_turn)}
-          narrative={lastRejection}
-        />
-      ) : null}
-
-      {lastOffReply ? (
-        <TransmissionPanel
-          headLabel={t("transmission.offHead")}
-          dateLabel={narrativeDate(lastOffReply.turn_number)}
-          question={lastOffReply.question}
-          narrative={lastOffReply.answer}
-        />
-      ) : null}
-
-      {!ended || isReplayView ? (
-        <MovePanel
-          title={
-            isReplayView
-              ? t("move.titleReplay", {
-                  turn: viewedTurn,
-                  month: moveMonth,
-                  year: moveCal.year,
-                })
-              : t("move.title", {
-                  month: moveMonth,
-                  year: moveCal.year,
-                })
-          }
-          value={moveDraft}
-          resolving={resolving}
-          offMode={offMode && !isReplayView}
-          replayMode={isReplayView}
-          onChange={setMoveDraft}
-          onSubmit={() => void submitAndResolve()}
-        />
-      ) : (
-        <section className="panel">
-          <div className="panel-title">
-            <span>{t("game.endedTitle")}</span>
-          </div>
-          <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
-            {winnerLabel
-              ? t("game.winner", { winner: winnerLabel })
-              : t("game.drawCap")}
-          </p>
-        </section>
-      )}
-
-      {ended && viewedTurn === game.current_turn ? (
-        <>
-          <section className="panel" data-testid="game-ending">
-            <div className="panel-title">
-              <span>{t("game.endedTitle")}</span>
-            </div>
-            <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
-              {winnerLabel
-                ? t("game.winner", { winner: winnerLabel })
-                : t("game.drawCap")}
-              {endingLabel
-                ? ` · ${t("game.ending", { ending: endingLabel })}`
-                : ""}
-            </p>
-          </section>
-          {game.epilogue ? (
-            <TransmissionPanel
-              headLabel={t("game.epilogueTitle")}
-              dateLabel={narrativeDate(game.current_turn)}
-              narrative={game.epilogue}
+          {scores ? (
+            <ZeroSumLedger
+              title={t("ledger.heading")}
+              scores={scores}
+              deltas={viewedDeltas}
+              displayNames={displayNames}
+              humanRole={humanRole}
             />
           ) : null}
-        </>
-      ) : null}
+        </div>
 
-      {!ended ? (
-        <FooterNav
-          currentTurn={game.current_turn}
-          humanityWinTurn={game.humanity_win_turn}
-        />
-      ) : null}
+        <div className="game-col">
+          {showIntro ? (
+            <TransmissionPanel
+              headLabel={t("transmission.introHead")}
+              dateLabel={narrativeDate(1)}
+              narrative={
+                game.narrator_intro ??
+                t("transmission.awaitingBody", { turn: game.current_turn })
+              }
+            />
+          ) : lastAdjudication ? (
+            <TransmissionPanel
+              turnNumber={viewedTurn}
+              dateLabel={narrativeDate(viewedTurn)}
+              narrative={lastAdjudication.world_narrative}
+              feedback={lastAdjudication.seat_feedback[humanRole]}
+              feedbackSeatLabel={humanLabel}
+            />
+          ) : null}
+
+          {lastRejection ? (
+            <TransmissionPanel
+              headLabel={t("transmission.rejectHead")}
+              dateLabel={narrativeDate(game.current_turn)}
+              narrative={lastRejection}
+            />
+          ) : null}
+
+          {lastOffReply ? (
+            <TransmissionPanel
+              headLabel={t("transmission.offHead")}
+              dateLabel={narrativeDate(lastOffReply.turn_number)}
+              question={lastOffReply.question}
+              narrative={lastOffReply.answer}
+            />
+          ) : null}
+
+          {!ended || isReplayView ? (
+            <MovePanel
+              title={
+                isReplayView
+                  ? t("move.titleReplay", {
+                      turn: viewedTurn,
+                      month: moveMonth,
+                      year: moveCal.year,
+                    })
+                  : t("move.title", {
+                      month: moveMonth,
+                      year: moveCal.year,
+                    })
+              }
+              value={moveDraft}
+              resolving={resolving}
+              offMode={offMode && !isReplayView}
+              replayMode={isReplayView}
+              onChange={setMoveDraft}
+              onSubmit={() => void submitAndResolve()}
+            />
+          ) : (
+            <section className="panel">
+              <div className="panel-title">
+                <span>{t("game.endedTitle")}</span>
+              </div>
+              <p style={{ color: "var(--text-muted)", fontSize: 16 }}>
+                {winnerLabel
+                  ? t("game.winner", { winner: winnerLabel })
+                  : t("game.drawCap")}
+              </p>
+            </section>
+          )}
+
+          {ended && viewedTurn === game.current_turn ? (
+            <>
+              <section className="panel" data-testid="game-ending">
+                <div className="panel-title">
+                  <span>{t("game.endedTitle")}</span>
+                </div>
+                <p style={{ color: "var(--text-muted)", fontSize: 16 }}>
+                  {winnerLabel
+                    ? t("game.winner", { winner: winnerLabel })
+                    : t("game.drawCap")}
+                  {endingLabel
+                    ? ` · ${t("game.ending", { ending: endingLabel })}`
+                    : ""}
+                </p>
+              </section>
+              {game.epilogue ? (
+                <TransmissionPanel
+                  headLabel={t("game.epilogueTitle")}
+                  dateLabel={narrativeDate(game.current_turn)}
+                  narrative={game.epilogue}
+                />
+              ) : null}
+            </>
+          ) : null}
+
+          {!ended ? (
+            <FooterNav
+              currentTurn={game.current_turn}
+              humanityWinTurn={game.humanity_win_turn}
+            />
+          ) : null}
+        </div>
+      </div>
+      <SiteFooter />
     </div>
   );
 }

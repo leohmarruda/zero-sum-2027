@@ -29,10 +29,8 @@ interface Props {
   /** Change versus the previous turn, by seat role then category. */
   deltas?: ScoreDeltas | null;
   displayNames?: Record<string, string | null | undefined>;
-  canGoPrev?: boolean;
-  canGoNext?: boolean;
-  onPrev?: () => void;
-  onNext?: () => void;
+  /** Seat role played by the human, flagged with a YOU badge in the legend. */
+  humanRole?: string;
 }
 
 export function ZeroSumLedger({
@@ -40,10 +38,7 @@ export function ZeroSumLedger({
   scores,
   deltas,
   displayNames,
-  canGoPrev,
-  canGoNext,
-  onPrev,
-  onNext,
+  humanRole,
 }: Props) {
   const t = useLocaleStore((s) => s.t);
   const roles = Object.keys(scores);
@@ -60,37 +55,17 @@ export function ZeroSumLedger({
   return (
     <section className="panel">
       <div className="panel-title">
-        <div className="ledger-title-row">
-          <span>{title}</span>
-          <div className="turn-nav">
-            <button
-              type="button"
-              className="turn-nav-btn"
-              aria-label="Previous turn"
-              disabled={!canGoPrev}
-              onClick={onPrev}
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              className="turn-nav-btn"
-              aria-label="Next turn"
-              disabled={!canGoNext}
-              onClick={onNext}
-            >
-              ›
-            </button>
+        <span>{title}</span>
+      </div>
+
+      <div className="legend">
+        {roles.map((role) => (
+          <div className="legend-item" key={role}>
+            <span className={`swatch ${ROLE_CSS[role as PlayableRole] ?? "hwg"}`} />
+            {labelFor(role)}
+            {role === humanRole ? <span className="you-badge">{t("setup.playerHuman")}</span> : null}
           </div>
-        </div>
-        <div className="legend">
-          {roles.map((role) => (
-            <div className="legend-item" key={role}>
-              <span className={`swatch ${ROLE_CSS[role as PlayableRole] ?? "hwg"}`} />
-              {labelFor(role)}
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
 
       {CATEGORY_KEYS.map(({ key, labelKey, descKey }) => {
@@ -117,7 +92,8 @@ export function ZeroSumLedger({
                 {withDelta.map((v, i) => (
                   <span key={v.role} data-testid={`agg-${key}-${v.role}`}>
                     {i > 0 ? " · " : ""}
-                    {v.short} {Math.round(v.value)}
+                    {v.short}{" "}
+                    <b className={`agg-val ${v.css}`}>{Math.round(v.value)}</b>
                     {v.delta ? (
                       <span className={`delta ${v.delta.up ? "up" : "down"}`}>
                         {v.delta.text}

@@ -14,10 +14,8 @@ import {
   roleStartingKey,
   useLocaleStore,
 } from "../i18n";
-import {
-  estimateGameCost,
-  formatUsdEstimate,
-} from "../lib/costEstimate";
+import { estimateGameCost, formatUsdEstimate } from "../lib/costEstimate";
+import { ModelPicker } from "./ModelPicker";
 import "./SetupForm.css";
 
 const DEFAULT_MODEL = "openrouter/openai/gpt-4o-mini";
@@ -74,11 +72,7 @@ function CustomNameModal({
   };
 
   return (
-    <div
-      className="modal-backdrop"
-      role="presentation"
-      onClick={onClose}
-    >
+    <div className="modal-backdrop" role="presentation" onClick={onClose}>
       <div
         className="modal"
         role="dialog"
@@ -88,6 +82,14 @@ function CustomNameModal({
       >
         <h2 id={titleId} className="modal-title">
           {t("setup.customName")}
+          <button
+            type="button"
+            className="modal-close"
+            aria-label={t("setup.customNameCancel")}
+            onClick={onClose}
+          >
+            ✕
+          </button>
         </h2>
         <p className="modal-role">{roleLabel}</p>
         <label className="modal-field">
@@ -156,10 +158,26 @@ export function SetupForm({
   const cost = estimateGameCost(seats);
   const [namingRole, setNamingRole] = useState<SeatRole | null>(null);
 
+  /** Description on one line, "Start: …" (plus win restriction) on the next. */
   const roleBlurb = (role: SeatRole) => {
-    const parts = [t(roleDescKey(role)), t(roleStartingKey(role, hasHwg))];
-    if (roleHasDelayedWin(role)) parts.push(t("roleStart.delayedWin"));
-    return parts.join(" ");
+    const desc = t(roleDescKey(role));
+    const starting = t(roleStartingKey(role, hasHwg));
+    if (role === "narrator")
+      return { desc: `${desc} ${starting}`, start: null };
+    const start = roleHasDelayedWin(role)
+      ? `${starting} ${t("roleStart.delayedWin")}`
+      : starting;
+    return { desc, start };
+  };
+
+  const renderBlurb = (role: SeatRole) => {
+    const { desc, start } = roleBlurb(role);
+    return (
+      <>
+        <p className="seat-desc">{desc}</p>
+        {start ? <p className="seat-desc">{start}</p> : null}
+      </>
+    );
   };
 
   const roleLabel = (role: SeatRole) => t(roleMessageKey(role));
@@ -194,9 +212,7 @@ export function SetupForm({
   const changeRole = (from: PlayableRole, to: PlayableRole) => {
     if (from === to) return;
     if (used.has(to)) return;
-    onChangeSeats(
-      seats.map((s) => (s.role === from ? { ...s, role: to } : s)),
-    );
+    onChangeSeats(seats.map((s) => (s.role === from ? { ...s, role: to } : s)));
   };
 
   const addRole = (role: PlayableRole) => {
@@ -216,17 +232,25 @@ export function SetupForm({
   const removeRole = (role: PlayableRole) => {
     if (playable.length <= 2) return;
     const remaining = playable.filter((s) => s.role !== role);
-    const hadHuman = playable.find((s) => s.role === role)?.player_type === "human";
+    const hadHuman =
+      playable.find((s) => s.role === role)?.player_type === "human";
     const next = remaining.map((s, i) =>
       hadHuman && i === 0
-        ? { ...s, player_type: "human" as const, model: null, temperature: null }
+        ? {
+            ...s,
+            player_type: "human" as const,
+            model: null,
+            temperature: null,
+          }
         : s,
     );
     onChangeSeats([...next, narrator]);
   };
 
   const namingSeat =
-    namingRole == null ? null : seats.find((s) => s.role === namingRole) ?? null;
+    namingRole == null
+      ? null
+      : (seats.find((s) => s.role === namingRole) ?? null);
 
   return (
     <>
@@ -234,13 +258,17 @@ export function SetupForm({
         <p>{setupIntro}</p>
       </section>
 
-      <section className="hero panel">
+      <section className="hero">
+        <div className="hero-eyebrow">{t("setup.eyebrow")}</div>
         <h1>{t("setup.title")}</h1>
         <p>{t("setup.blurb")}</p>
       </section>
 
       <section className="panel">
-        <div className="panel-title">{t("setup.seats")}</div>
+        <div className="panel-title">
+          <span>{t("setup.seats")}</span>
+          <span className="seat-count">{playable.length}</span>
+        </div>
         {playable.map((seat) => {
           const role = seat.role as PlayableRole;
           const isHuman = seat.player_type === "human";
@@ -249,7 +277,10 @@ export function SetupForm({
             ...PLAYABLE_ROLES.filter((r) => !used.has(r)),
           ];
           return (
-            <div className="seat" key={role}>
+            <div
+              className={`seat ${ROLE_CSS[role]}${isHuman ? " is-human" : ""}`}
+              key={role}
+            >
               <div className="seat-head">
                 <div className="seat-role">
                   <span className={`dot ${ROLE_CSS[role]}`} />
@@ -276,7 +307,9 @@ export function SetupForm({
                 </div>
                 <div className="seat-head-actions">
                   {isHuman ? (
-                    <span className="seat-type human">{t("setup.playerHuman")}</span>
+                    <span className="seat-type human">
+                      {t("setup.playerHuman")}
+                    </span>
                   ) : (
                     <button
                       type="button"
@@ -298,25 +331,28 @@ export function SetupForm({
                 </div>
               </div>
 
-              <p className="seat-desc">{roleBlurb(role)}</p>
+              {renderBlurb(role)}
 
               {!isHuman ? (
                 <div className="fields">
                   <label>
                     {t("setup.model")}
-                    <input
+                    <ModelPicker
                       value={seat.model ?? ""}
-                      onChange={(e) => updateSeat(role, { model: e.target.value })}
+                      onChange={(model) => updateSeat(role, { model })}
                     />
                   </label>
                   <label>
-                    {t("setup.temp")}
+                    <span className="temp-label">
+                      {t("setup.temp")}
+                      <b>{(seat.temperature ?? 0.7).toFixed(2)}</b>
+                    </span>
                     <input
-                      type="number"
+                      type="range"
                       min={0}
-                      max={2}
-                      step={0.1}
-                      value={seat.temperature ?? 0.7}
+                      max={1}
+                      step={0.05}
+                      value={Math.min(seat.temperature ?? 0.7, 1)}
                       onChange={(e) =>
                         updateSeat(role, {
                           temperature: Number.parseFloat(e.target.value) || 0,
@@ -356,38 +392,35 @@ export function SetupForm({
             <p className="note">{t("setup.noMoreRoles")}</p>
           )}
         </div>
-      </section>
 
-      {error ? <div className="error-banner">{error}</div> : null}
-
-      <section className="panel">
-        <div className="seat">
+        <div className={`seat ${ROLE_CSS.narrator}`}>
           <div className="seat-head">
             <div className="seat-role">
               <span className={`dot ${ROLE_CSS.narrator}`} />
               <span className="role-static">{roleLabel("narrator")}</span>
             </div>
-            <span className="seat-type">{t("setup.fixedRole")}</span>
+            <span className="seat-type fixed">{t("setup.fixedRole")}</span>
           </div>
-          <p className="seat-desc">{roleBlurb("narrator")}</p>
+          {renderBlurb("narrator")}
           <div className="fields">
             <label>
               {t("setup.model")}
-              <input
+              <ModelPicker
                 value={narrator.model ?? ""}
-                onChange={(e) =>
-                  updateSeat("narrator", { model: e.target.value })
-                }
+                onChange={(model) => updateSeat("narrator", { model })}
               />
             </label>
             <label>
-              {t("setup.temp")}
+              <span className="temp-label">
+                {t("setup.temp")}
+                <b>{(narrator.temperature ?? 0.4).toFixed(2)}</b>
+              </span>
               <input
-                type="number"
+                type="range"
                 min={0}
-                max={2}
-                step={0.1}
-                value={narrator.temperature ?? 0.4}
+                max={1}
+                step={0.05}
+                value={Math.min(narrator.temperature ?? 0.4, 1)}
                 onChange={(e) =>
                   updateSeat("narrator", {
                     temperature: Number.parseFloat(e.target.value) || 0,
@@ -399,11 +432,10 @@ export function SetupForm({
         </div>
       </section>
 
+      {error ? <div className="error-banner">{error}</div> : null}
+
       <div className="actions">
-        <div
-          className="cost-estimate"
-          title={t("setup.estCostHint")}
-        >
+        <div className="cost-estimate" title={t("setup.estCostHint")}>
           <span className="cost-estimate-label">{t("setup.estCost")}</span>
           <span className="cost-estimate-value">
             {t("setup.estCostValue", {

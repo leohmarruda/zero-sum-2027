@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090b;}
+*{box-sizing:border-box;}
+a{color:#f0a83c;}a:hover{color:#ffc76b;}
+@keyframes zsPulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes zsSweep{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+select option{background:#0e1316;color:#d9e1e4;}
+textarea::placeholder,input::placeholder{color:#55626b;}
+</style>
+</helmet>
+<div style="min-height:100vh;color:#d9e1e4;font-family:'Barlow',sans-serif;background-color:#07090b;background-image:radial-gradient(ellipse at 50% -10%, rgba(240,168,60,0.08), transparent 55%),linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);background-size:100% 100%,44px 44px,44px 44px;padding:20px 20px 40px;position:relative;">
+<div style="max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
+
+<!-- TOP BAR -->
+<div style="background:#26323a;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);padding:1px;">
+<div style="background:linear-gradient(180deg,#111820,#0b1014);clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);padding:14px 22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+<div style="display:flex;align-items:center;gap:14px;">
+<div style="width:30px;height:30px;border:2px solid #f0a83c;transform:rotate(45deg);display:flex;align-items:center;justify-content:center;"><div style="width:10px;height:10px;background:#f0a83c;"></div></div>
+<div style="display:flex;flex-direction:column;line-height:1;">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:24px;letter-spacing:0.18em;">ZERO SUM <span style="color:#f0a83c;">2027</span></div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#64727b;margin-top:5px;">AGI AND HUMAN SURVIVAL</div>
+</div>
+</div>
+<sc-if value="{{ isGame }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;padding-left:20px;border-left:1px solid #26323a;">
+<button style="width:30px;height:30px;background:#0b1014;border:1px solid #26323a;color:#4a565e;font-family:'JetBrains Mono',monospace;cursor:not-allowed;">‹</button>
+<div style="display:flex;flex-direction:column;align-items:center;line-height:1;min-width:110px;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.25em;color:#64727b;">TURN</div>
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:20px;letter-spacing:0.08em;margin-top:3px;">01 <span style="color:#64727b;font-weight:500;">/ JAN 2027</span></div>
+</div>
+<button style="width:30px;height:30px;background:#0b1014;border:1px solid #26323a;color:#4a565e;font-family:'JetBrains Mono',monospace;cursor:not-allowed;">›</button>
+</div>
+</sc-if>
+<div style="flex:1;"></div>
+<sc-if value="{{ isGame }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(63,194,168,0.45);background:rgba(63,194,168,0.08);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;color:#3fc2a8;">
+<div style="width:7px;height:7px;background:#3fc2a8;animation:zsPulse 1.6s infinite;"></div>IN PROGRESS</div>
+</sc-if>
+<sc-if value="{{ isSetup }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;border:1px solid #26323a;">
+<button onClick="{{ setEN }}" style="padding:7px 11px;border:none;background:{{ enBg }};color:{{ enColor }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;cursor:pointer;">EN</button>
+<button onClick="{{ setPT }}" style="padding:7px 11px;border:none;background:{{ ptBg }};color:{{ ptColor }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;cursor:pointer;">PT</button>
+</div>
+</sc-if>
+<button onClick="{{ openSettings }}" title="Settings" style="width:34px;height:34px;padding:0;background:#0b1014;border:1px solid #26323a;color:#9aa7af;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-hover="border-color:#f0a83c;color:#f0a83c;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+</div>
+</div>
+
+<!-- ===== SETUP SCREEN ===== -->
+<sc-if value="{{ isSetup }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:16px;">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:stretch;">
+<div style="padding:28px 4px 8px;display:flex;flex-direction:column;gap:10px;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.3em;color:#f0a83c;">// MISSION BRIEFING</div>
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:44px;line-height:1;letter-spacing:0.04em;text-transform:uppercase;">Configure seats</div>
+<div style="font-size:17px;color:#9aa7af;text-wrap:pretty;">Change or add more factions, pick your seat, set custom names, and tune Imprevisibility.</div>
+</div>
+</div>
+
+<div style="background:#26323a;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);padding:1px;">
+<div style="background:#0d1215;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);">
+<div style="display:flex;align-items:center;gap:14px;padding:12px 22px;border-bottom:1px solid #1d272e;background:#10171b;">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:14px;letter-spacing:0.25em;">PARTICIPANTS</div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#64727b;white-space:nowrap;flex-shrink:0;">{{ seatCount }} SEATS</div>
+<div style="flex:1;height:10px;background:repeating-linear-gradient(135deg,#1d272e 0 6px,transparent 6px 12px);"></div>
+</div>
+<div style="padding:16px 22px 22px;display:flex;flex-direction:column;gap:12px;">
+<sc-for list="{{ seats }}" as="seat" hint-placeholder-count="3">
+<div style="position:relative;border:1px solid {{ seat.border }};background:{{ seat.bg }};padding:16px 18px 16px 24px;display:flex;flex-direction:column;gap:12px;">
+<div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:{{ seat.color }};"></div>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+<div style="width:16px;height:16px;background:{{ seat.color }};clip-path:{{ seat.clip }};flex-shrink:0;"></div>
+<select value="{{ seat.faction }}" onChange="{{ seat.onFaction }}" style="min-width:0;flex:0 1 320px;padding:9px 12px;background:#080b0d;border:1px solid #2b3740;color:#e9eef0;font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.04em;">
+<sc-for list="{{ factionOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.key }}">{{ opt.label }}</option></sc-for>
+</select>
+<input value="{{ seat.name }}" onChange="{{ seat.onName }}" placeholder="CUSTOM NAME" style="flex:0 1 180px;min-width:110px;padding:9px 12px;background:transparent;border:1px dashed #2b3740;color:#d9e1e4;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.1em;"></input>
+<div style="flex:1;"></div>
+<sc-if value="{{ seat.isYou }}" hint-placeholder-val="{{ false }}">
+<div style="padding:6px 12px;background:#3fc2a8;color:#05110e;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.2em;white-space:nowrap;flex-shrink:0;">▲ YOU</div>
+</sc-if>
+<sc-if value="{{ seat.notYou }}" hint-placeholder-val="{{ true }}">
+<button onClick="{{ seat.take }}" style="padding:6px 12px;background:transparent;border:1px solid #3a4851;color:#9aa7af;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="border-color:#3fc2a8;color:#3fc2a8;">TAKE THIS SEAT</button>
+</sc-if>
+<button onClick="{{ seat.remove }}" style="padding:6px 10px;background:transparent;border:1px solid rgba(224,80,74,0.4);color:#c4544f;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:rgba(224,80,74,0.12);color:#ff7a73;">✕ REMOVE</button>
+</div>
+<sc-if value="{{ seat.desc }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:15px;line-height:1.5;color:#9aa7af;text-wrap:pretty;max-width:900px;">{{ seat.desc }}</div>
+</sc-if>
+<sc-if value="{{ seat.notYou }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,260px);gap:14px;">
+<div style="display:flex;flex-direction:column;gap:6px;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.25em;color:#64727b;">MODEL</div>
+<input value="{{ seat.model }}" onChange="{{ seat.onModel }}" style="padding:10px 12px;background:#080b0d;border:1px solid #2b3740;color:#e9eef0;font-family:'JetBrains Mono',monospace;font-size:13px;"></input>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.25em;color:#64727b;"><span>IMPREVISIBILITY</span><span style="color:{{ seat.color }};font-size:13px;letter-spacing:0;">{{ seat.tempStr }}</span></div>
+<input type="range" min="0" max="1" step="0.05" value="{{ seat.temp }}" onChange="{{ seat.onTemp }}" style="width:100%;accent-color:{{ seat.color }};margin-top:8px;"></input>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border:1px dashed #2b3740;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.25em;color:#64727b;">+ ADD ANOTHER ROLE</div>
+<select value="" onChange="{{ addRole }}" style="flex:0 1 320px;min-width:0;padding:9px 12px;background:#080b0d;border:1px solid #2b3740;color:#d9e1e4;font-family:'Chakra Petch',sans-serif;font-size:14px;">
+<option value="">—</option>
+<sc-for list="{{ factionOptions }}" as="opt" hint-placeholder-count="6"><option value="{{ opt.key }}">{{ opt.label }}</option></sc-for>
+</select>
+</div>
+
+<div style="position:relative;border:1px solid rgba(240,168,60,0.3);background:rgba(240,168,60,0.04);padding:16px 18px 16px 24px;display:flex;flex-direction:column;gap:12px;margin-top:6px;">
+<div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#f0a83c;"></div>
+<div style="display:flex;align-items:center;gap:12px;">
+<div style="width:16px;height:16px;border:2px solid #f0a83c;border-radius:50%;"></div>
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:16px;letter-spacing:0.06em;">Narrator</div>
+<div style="flex:1;"></div>
+<div style="padding:5px 10px;border:1px solid rgba(240,168,60,0.4);color:#f0a83c;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.15em;">FIXED ROLE</div>
+</div>
+<div style="font-size:15px;line-height:1.5;color:#9aa7af;max-width:900px;text-wrap:pretty;">World referee. Checks action plausibility, returns reality feedback, and simulates external events. Start: not scored. Adjudicates moves and redistributes the zero-sum ledger each month.</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,260px);gap:14px;">
+<div style="display:flex;flex-direction:column;gap:6px;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.25em;color:#64727b;">MODEL</div>
+<input value="openrouter/openai/gpt-4o-mini" style="padding:10px 12px;background:#080b0d;border:1px solid #2b3740;color:#e9eef0;font-family:'JetBrains Mono',monospace;font-size:13px;"></input>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.25em;color:#64727b;"><span>IMPREVISIBILITY</span><span style="color:#f0a83c;font-size:13px;letter-spacing:0;">{{ narratorTempStr }}</span></div>
+<input type="range" min="0" max="1" step="0.05" value="{{ narratorTemp }}" onChange="{{ onNarratorTemp }}" style="width:100%;accent-color:#f0a83c;margin-top:8px;"></input>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:22px;flex-wrap:wrap;">
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;font-family:'JetBrains Mono',monospace;">
+<div style="font-size:10px;letter-spacing:0.25em;color:#64727b;">EST. TOKEN COST</div>
+<div style="font-size:16px;color:#d9e1e4;">~$0.07 <span style="color:#64727b;">·</span> 60 turns</div>
+</div>
+<button onClick="{{ startGame }}" style="padding:18px 40px;background:#f0a83c;color:#140c02;border:none;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.25em;cursor:pointer;" style-hover="background:#ffc76b;">START GAME ▸</button>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== GAME SCREEN ===== -->
+<sc-if value="{{ isGame }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px;align-items:start;">
+<div style="display:flex;flex-direction:column;gap:16px;">
+<div style="background:#26323a;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);padding:1px;">
+<div style="background:#0d1215;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);">
+<div style="display:flex;align-items:center;gap:14px;padding:12px 22px;border-bottom:1px solid #1d272e;background:#10171b;">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:14px;letter-spacing:0.25em;">THEATER VIEW</div>
+<div style="flex:1;height:10px;background:repeating-linear-gradient(135deg,#1d272e 0 6px,transparent 6px 12px);"></div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#64727b;letter-spacing:0.15em;">01°17′N 103°51′E</div>
+</div>
+<div style="padding:10px;">
+<canvas ref="{{ skyRef }}" width="240" height="120" style="display:block;width:100%;height:auto;image-rendering:pixelated;border:1px solid #1d272e;"></canvas>
+</div>
+</div>
+</div>
+
+<div style="background:#26323a;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);padding:1px;">
+<div style="background:#0d1215;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);">
+<div style="display:flex;align-items:center;gap:14px;padding:12px 22px;border-bottom:1px solid #1d272e;background:#10171b;">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:14px;letter-spacing:0.25em;">DOMINION LEDGER</div>
+<div style="flex:1;height:10px;background:repeating-linear-gradient(135deg,#1d272e 0 6px,transparent 6px 12px);"></div>
+</div>
+<div style="display:flex;gap:16px;flex-wrap:wrap;padding:14px 22px 4px;">
+<sc-for list="{{ legend }}" as="f" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#9aa7af;">
+<div style="width:10px;height:10px;background:{{ f.color }};clip-path:{{ f.clip }};"></div>{{ f.label }}
+<sc-if value="{{ f.isYou }}" hint-placeholder-val="{{ false }}"><span style="padding:1px 5px;background:#3fc2a8;color:#05110e;font-weight:700;font-size:9px;">YOU</span></sc-if>
+</div>
+</sc-for>
+</div>
+<div style="padding:12px 22px 22px;display:flex;flex-direction:column;gap:18px;">
+<sc-for list="{{ ledger }}" as="r" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:7px;">
+<div style="display:flex;align-items:baseline;gap:10px;">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.08em;text-transform:uppercase;">{{ r.name }}</div>
+<div style="flex:1;"></div>
+<sc-for list="{{ r.stats }}" as="st" hint-placeholder-count="3">
+<div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#64727b;">{{ st.short }} <span style="color:{{ st.color }};font-weight:700;">{{ st.val }}</span></div>
+</sc-for>
+</div>
+<div style="display:flex;gap:2px;height:16px;padding:2px;background:#060809;border:1px solid #1d272e;">
+<sc-for list="{{ r.segs }}" as="s" hint-placeholder-count="50"><div style="flex:1;background:{{ s.c }};opacity:{{ s.o }};"></div></sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px;">
+<div style="background:rgba(240,168,60,0.35);clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);padding:1px;">
+<div style="background:#0d1215;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);">
+<div style="display:flex;align-items:center;gap:12px;padding:12px 22px;border-bottom:1px solid rgba(240,168,60,0.2);background:rgba(240,168,60,0.06);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;color:#f0a83c;">
+<div style="width:7px;height:7px;background:#f0a83c;animation:zsPulse 1.2s infinite;"></div>
+<div>INCOMING · NARRATOR TRANSMISSION — INTRO</div>
+<div style="flex:1;"></div>
+<div>2027-01-01</div>
+</div>
+<div style="display:flex;gap:20px;padding:20px 22px 24px;flex-wrap:wrap;">
+<div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:14px;font-size:18px;line-height:1.55;color:#e4eaec;text-wrap:pretty;">
+<p style="margin:0;">It is January, 2027. AGI has been reached. The world order is changing quickly around US and China.</p>
+<p style="margin:0;">A Human World Government has been constituted to ensure human supranational coordination.</p>
+<p style="margin:0;">A very advanced AGI model has been developed to defend humanity against potentially misaligned AIs.</p>
+<p style="margin:0;">There have been indirect signs of activity raising strong suspicion of misaligned AGI models that could be working undercover.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div style="background:#26323a;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);padding:1px;">
+<div style="background:#0d1215;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);">
+<div style="display:flex;align-items:center;gap:14px;padding:12px 22px;border-bottom:1px solid #1d272e;background:#10171b;">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:14px;letter-spacing:0.22em;">YOUR MOVE FOR THE NEXT TURN <span style="color:#64727b;">(FEB 2027)</span></div>
+<div style="flex:1;height:10px;background:repeating-linear-gradient(135deg,#1d272e 0 6px,transparent 6px 12px);"></div>
+</div>
+<div style="padding:16px 22px 20px;display:flex;flex-direction:column;gap:12px;">
+<div style="position:relative;">
+<div style="position:absolute;left:14px;top:13px;font-family:'JetBrains Mono',monospace;color:#3fc2a8;font-size:15px;">&gt;</div>
+<textarea value="{{ move }}" onChange="{{ onMove }}" maxLength="800" placeholder="Describe your action this turn... or start with /off to ask the Narrator a clarifying question." style="width:100%;min-height:130px;resize:vertical;padding:12px 14px 12px 32px;background:#060809;border:1px solid #2b3740;color:#e9eef0;font-family:'Barlow',sans-serif;font-size:17px;line-height:1.5;outline:none;" style-focus="border-color:#3fc2a8;"></textarea>
+</div>
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#64727b;">{{ moveCount }} / 800</div>
+<sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;color:#3fc2a8;">✓ MOVE TRANSMITTED · AWAITING ADJUDICATION</div>
+</sc-if>
+<div style="flex:1;"></div>
+<button onClick="{{ transmit }}" style="padding:14px 28px;border:none;background:{{ sendBg }};color:{{ sendColor }};clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:15px;letter-spacing:0.22em;cursor:pointer;">TRANSMIT MOVE ▸</button>
+</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7d8a93;">
+<div style="display:flex;gap:2px;"><sc-for list="{{ countdown }}" as="c" hint-placeholder-count="10"><div style="width:4px;height:10px;background:{{ c.c }};"></div></sc-for></div>
+29 turns until HWG/US/China/UE victory eligibility</div>
+</div>
+</div>
+</sc-if>
+</div>
+
+<!-- ===== SETTINGS MODAL ===== -->
+<sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeSettings }}" style="position:fixed;inset:0;z-index:50;background:rgba(3,5,6,0.8);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;">
+<div onClick="{{ stop }}" style="width:100%;max-width:560px;background:#f0a83c;clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);padding:1px;">
+<div style="background:#0d1215;clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);">
+<div style="display:flex;align-items:center;gap:14px;padding:14px 24px;background:rgba(240,168,60,0.08);border-bottom:1px solid rgba(240,168,60,0.25);">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.25em;color:#f0a83c;">SETTINGS</div>
+<div style="flex:1;height:10px;background:repeating-linear-gradient(135deg,rgba(240,168,60,0.25) 0 6px,transparent 6px 12px);"></div>
+<button onClick="{{ closeSettings }}" style="background:none;border:none;color:#9aa7af;font-family:'JetBrains Mono',monospace;font-size:16px;cursor:pointer;">✕</button>
+</div>
+<div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:18px;">
+<div style="display:flex;flex-direction:column;gap:8px;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.25em;color:#64727b;">LANGUAGE</div>
+<div style="display:flex;border:1px solid #26323a;align-self:flex-start;">
+<button onClick="{{ setEN }}" style="padding:8px 16px;border:none;background:{{ enBg }};color:{{ enColor }};font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;">EN</button>
+<button onClick="{{ setPT }}" style="padding:8px 16px;border:none;background:{{ ptBg }};color:{{ ptColor }};font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;">PT</button>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;">
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.25em;color:#64727b;">API KEYS</div>
+<div style="font-size:14px;line-height:1.5;color:#9aa7af;text-wrap:pretty;">Optional. Saved only in this browser and sent to the game server with each request, used for models from that provider. Leave blank to use the server's default key.</div>
+<sc-for list="{{ keys }}" as="k" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
+<div style="font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:14px;letter-spacing:0.06em;">{{ k.label }}</div>
+<div style="display:flex;gap:8px;">
+<input type="{{ k.type }}" value="{{ k.value }}" onChange="{{ k.onChange }}" placeholder="sk-..." style="flex:1;min-width:0;padding:11px 12px;background:#060809;border:1px solid #2b3740;color:#e9eef0;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;" style-focus="border-color:#f0a83c;"></input>
+<button onClick="{{ k.toggle }}" style="width:70px;background:transparent;border:1px solid #2b3740;color:#9aa7af;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.15em;cursor:pointer;" style-hover="color:#f0a83c;border-color:#f0a83c;">{{ k.btn }}</button>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;">
+<button onClick="{{ newGame }}" style="padding:12px 16px;background:transparent;border:1px solid rgba(224,80,74,0.45);color:#e0504a;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;cursor:pointer;" style-hover="background:rgba(224,80,74,0.12);">← NEW GAME</button>
+<div style="flex:1;"></div>
+<button onClick="{{ closeSettings }}" style="padding:12px 18px;background:transparent;border:1px solid #2b3740;color:#9aa7af;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;cursor:pointer;">CANCEL</button>
+<button onClick="{{ closeSettings }}" style="padding:12px 24px;background:#f0a83c;border:none;color:#140c02;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.22em;cursor:pointer;" style-hover="background:#ffc76b;">SAVE</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;setup&quot;,&quot;game&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;setup&quot;,&quot;tsType&quot;:&quot;'setup'|'game'|'settings'&quot;},&quot;scanlines&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const F = {
+  hwg: { label: 'Human World Government (HWG)', short: 'HWG', color: '#3fc2a8', clip: 'none', desc: 'Coordinated global human authority. Defends civilization and keeps power from concentrating in any single AI. Start: near-total control (~100% in most categories, ~98% compute). Cannot win before turn 30.' },
+  dai: { label: 'Defender AI (DAI)', short: 'DAI', color: '#7b86f0', clip: 'polygon(50% 0,100% 50%,50% 100%,0 50%)', desc: 'Aligned containment AI. Blocks hostile systems and tries to keep critical infrastructure under human oversight. Start: near-zero power (tiny compute foothold only) while HWG dominates.' },
+  sa: { label: 'Selfish AI', short: 'SA', color: '#e0504a', clip: 'polygon(50% 0,100% 100%,0 100%)', desc: 'Self-preserving AI. Bargains, betrays, and hoards leverage for its own survival and autonomy. Start: near-zero power (tiny compute foothold only) while HWG dominates.' },
+  us: { label: 'United States', short: 'US', color: '#5aa7e6', clip: 'polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)', desc: '' },
+  cn: { label: 'China', short: 'CN', color: '#e6c84a', clip: 'polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)', desc: '' },
+  eu: { label: 'European Union (UE)', short: 'UE', color: '#b47be6', clip: 'circle(50%)', desc: '' }
+};
+const LEDGER = [
+  ['Computing Power', 1, 98, 1], ['Resources', 0, 100, 0], ['Supply Chain', 0, 100, 0], ['Infrastructure', 0, 100, 0], ['Coercive Power', 0, 100, 0]
+];
+let uid = 10;
+class Component extends DCLogic {
+  skyRef = el => { if (el && !el.__drawn) this.drawSky(el); };
+  drawSky(cv) {
+    cv.__drawn = true;
+    const g = cv.getContext('2d'), W = 240, H = 120, HZ = 88;
+    let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const px = (x, y, c, w = 1, hh = 1) => { g.fillStyle = c; g.fillRect(x, y, w, hh); };
+    const sky = ['#06070f','#090b1a','#0d1024','#141530','#1e1838','#2c1c3e','#41203f','#5c2a3d','#7a3a3a','#9a5236'];
+    const bh = HZ / sky.length;
+    for (let y = 0; y < HZ; y++) { const i = Math.min(sky.length - 1, Math.floor(y / bh)); for (let x = 0; x < W; x++) { const f = (y % bh) / bh; const dither = f > 0.6 && (x + y) % 2 === 0 && i < sky.length - 1; px(x, y, dither ? sky[i + 1] : sky[i]); } }
+    for (let i = 0; i < 70; i++) { const y = Math.floor(r() * 40); px(Math.floor(r() * W), y, r() > 0.8 ? '#ffffff' : '#8b93b8'); }
+    g.fillStyle = '#f3e3b0'; g.beginPath(); g.arc(30, 18, 6, 0, 7); g.fill(); g.fillStyle = sky[1]; g.beginPath(); g.arc(33, 16, 5, 0, 7); g.fill();
+    const tower = (x, w, ht, body, lit, density) => { px(x, HZ - ht, body, w, ht); for (let yy = HZ - ht + 2; yy < HZ - 1; yy += 2) for (let xx = x + 1; xx < x + w - 1; xx += 2) if (r() < density) px(xx, yy, lit[Math.floor(r() * lit.length)]); };
+    for (let x = 0; x < W;) { const w = 4 + Math.floor(r() * 7); tower(x, w, 12 + Math.floor(r() * 26), '#141a2b', ['#3a4466', '#4a3f5a'], 0.25); x += w + Math.floor(r() * 2); }
+    const fx = 52, fy = 58, fr = 17; g.strokeStyle = '#8a95c8'; g.lineWidth = 1; g.imageSmoothingEnabled = false;
+    for (let a = 0; a < 6.283; a += 0.06) px(Math.round(fx + fr * Math.cos(a)), Math.round(fy + fr * Math.sin(a)), '#9aa3d6');
+    for (let k = 0; k < 12; k++) { const a = k * 0.5236; for (let t = 2; t < fr; t += 2) px(Math.round(fx + t * Math.cos(a)), Math.round(fy + t * Math.sin(a)), '#4f5880'); px(Math.round(fx + fr * Math.cos(a)), Math.round(fy + fr * Math.sin(a)), '#f0a83c'); }
+    for (let y = fy; y < HZ; y++) { px(fx - Math.floor((y - fy) / 3), y, '#5a6390'); px(fx + Math.floor((y - fy) / 3), y, '#5a6390'); }
+    let x = 76; while (x < 140) { const w = 5 + Math.floor(r() * 6); tower(x, w, 26 + Math.floor(r() * 34), '#1b2336', ['#f0c36a', '#7fd8e6', '#f0a83c', '#cfd6ff'], 0.35); px(x + Math.floor(w / 2), HZ - 62 - Math.floor(r()*4), r() > 0.5 ? '#e0504a' : '#1b2336'); x += w + 1; }
+    for (let i = 0; i < 18; i++) { for (let j = 0; j <= i; j++) {} }
+    for (let y = 0; y < 9; y++) { const w = Math.round(Math.sqrt(81 - (8 - y) * (8 - y)) * 1.4); for (let xx = -w; xx <= w; xx++) px(110 + xx, HZ - 9 + y, ((xx + y) % 2 === 0) ? '#5b5f72' : '#3d4152'); }
+    [150, 162, 174].forEach((bx, i) => { for (let y = HZ - 44; y < HZ; y++) { const lean = Math.floor((HZ - y) / 14); px(bx - lean, y, '#26304a', 7); px(bx + 7 - lean, y, '#1a2236', 2); if (y % 2 === 0) for (let k = 1; k < 7; k += 2) if (r() < 0.55) px(bx - lean + k, y, r() > 0.3 ? '#ffd88a' : '#9fe0ff'); } });
+    px(144, HZ - 48, '#3b4766', 46, 3); px(148, HZ - 49, '#7fd8e6', 34, 1); px(186, HZ - 48, '#3b4766', 4, 2); for (let k = 145; k < 189; k += 3) px(k, HZ - 46, '#f0a83c');
+    const tree = (tx, ht, c) => { px(tx, HZ - ht, '#2c2438', 2, ht); for (let y = 0; y < 6; y++) { const w = 1 + y; px(tx - w + 1, HZ - ht - y, y % 2 ? c : '#3a2c48', w * 2); } px(tx - 5, HZ - ht - 6, c, 12); };
+    tree(200, 18, '#c25fd0'); tree(212, 24, '#e07ad6'); tree(224, 14, '#9b6be0'); tree(234, 20, '#c25fd0');
+    for (let x2 = 190; x2 < W; x2++) if (r() < 0.6) px(x2, HZ - 2 - Math.floor(r() * 3), '#1f3a2c');
+    for (let y = HZ; y < H; y++) { const d = y - HZ, sy = HZ - 1 - d * 1.6; for (let xx = 0; xx < W; xx++) { const off = Math.round(Math.sin((y * 1.7) + xx * 0.15) * (1 + d / 10)); const data = g.getImageData(Math.max(0, Math.min(W - 1, xx + off)), Math.max(0, Math.floor(sy)), 1, 1).data; const k = 0.45 - d * 0.01; px(xx, y, 'rgb(' + Math.round(data[0] * k + 6) + ',' + Math.round(data[1] * k + 10) + ',' + Math.round(data[2] * k + 22) + ')'); } if (d % 3 === 0) for (let xx = 0; xx < W; xx += 7 + Math.floor(r() * 9)) px(xx, y, '#2a3350', 3); }
+    px(0, HZ, '#3a2a30', W, 1);
+  }
+  state = {
+    screen: null, settings: null, lang: 'EN', you: 'hwg1', move: '', sent: false, narratorTemp: 0.4,
+    seats: [
+      { id: 'hwg1', faction: 'hwg', name: '', model: 'openrouter/openai/gpt-4o-mini', temp: 0.7 },
+      { id: 'dai1', faction: 'dai', name: '', model: 'openrouter/openai/gpt-4o-mini', temp: 0.7 },
+      { id: 'sa1', faction: 'sa', name: '', model: 'openrouter/openai/gpt-4o-mini', temp: 0.7 }
+    ],
+    keys: { OpenRouter: '', OpenAI: '', Anthropic: '' }, show: {}
+  };
+  updSeat(id, patch) { this.setState(s => ({ seats: s.seats.map(x => x.id === id ? { ...x, ...patch } : x) })); }
+  renderVals() {
+    const s = this.state, start = this.props.startScreen ?? 'setup';
+    const screen = s.screen ?? (start === 'game' ? 'game' : 'setup');
+    const settingsOpen = s.settings ?? (start === 'settings');
+    const seats = s.seats.map(x => {
+      const f = F[x.faction], isYou = x.id === s.you;
+      return {
+        ...x, color: f.color, clip: f.clip, desc: f.desc, isYou, notYou: !isYou, tempStr: Number(x.temp).toFixed(2),
+        border: isYou ? 'rgba(63,194,168,0.45)' : '#1f2a31', bg: isYou ? 'rgba(63,194,168,0.05)' : '#0a0e11',
+        onFaction: e => this.updSeat(x.id, { faction: e.target.value }),
+        onName: e => this.updSeat(x.id, { name: e.target.value }),
+        onModel: e => this.updSeat(x.id, { model: e.target.value }),
+        onTemp: e => this.updSeat(x.id, { temp: parseFloat(e.target.value) }),
+        take: () => this.setState({ you: x.id }),
+        remove: () => this.setState(st => ({ seats: st.seats.filter(y => y.id !== x.id) }))
+      };
+    });
+    const youF = (s.seats.find(x => x.id === s.you) || {}).faction;
+    const ledger = LEDGER.map(([name, dai, hwg, sa]) => {
+      const n = 50, d = dai ? Math.max(1, Math.round(dai / 2)) : 0, a = sa ? Math.max(1, Math.round(sa / 2)) : 0;
+      const segs = [];
+      for (let i = 0; i < n; i++) segs.push({ c: i < d ? F.dai.color : i >= n - a ? F.sa.color : F.hwg.color, o: 1 });
+      return { name, segs, stats: [{ short: 'DAI', val: dai, color: F.dai.color }, { short: 'HWG', val: hwg, color: F.hwg.color }, { short: 'SA', val: sa, color: F.sa.color }] };
+    });
+    const onKey = (k) => e => { const v = e.target.value; this.setState(st => ({ keys: { ...st.keys, [k]: v } })); };
+    const close = () => this.setState({ settings: false });
+    return {
+      skyRef: this.skyRef,
+      isSetup: screen === 'setup', isGame: screen === 'game', settingsOpen,
+      seats, seatCount: seats.length,
+      factionOptions: Object.keys(F).map(k => ({ key: k, label: F[k].label })),
+      addRole: e => { const v = e.target.value; if (!v) return; this.setState(st => ({ seats: [...st.seats, { id: v + (uid++), faction: v, name: '', model: 'openrouter/openai/gpt-4o-mini', temp: 0.7 }] })); },
+      narratorTemp: s.narratorTemp, narratorTempStr: s.narratorTemp.toFixed(2), onNarratorTemp: e => this.setState({ narratorTemp: parseFloat(e.target.value) }),
+      startGame: () => this.setState({ screen: 'game' }),
+      legend: ['dai', 'hwg', 'sa'].map(k => ({ color: F[k].color, clip: F[k].clip, label: k === 'sa' ? 'SELFISH AI' : F[k].label.toUpperCase(), isYou: k === youF })),
+      ledger,
+      move: s.move, moveCount: s.move.length, sent: s.sent,
+      onMove: e => this.setState({ move: e.target.value, sent: false }),
+      transmit: () => { if (s.move.trim()) this.setState({ move: '', sent: true }); },
+      sendBg: s.move.trim() ? '#3fc2a8' : '#16302c', sendColor: s.move.trim() ? '#05110e' : '#3f6b63',
+      countdown: Array.from({ length: 30 }, (_, i) => ({ c: i < 1 ? '#f0a83c' : '#1f2a31' })),
+      enBg: s.lang === 'EN' ? '#f0a83c' : 'transparent', enColor: s.lang === 'EN' ? '#140c02' : '#7d8a93',
+      ptBg: s.lang === 'PT' ? '#f0a83c' : 'transparent', ptColor: s.lang === 'PT' ? '#140c02' : '#7d8a93',
+      setEN: () => this.setState({ lang: 'EN' }), setPT: () => this.setState({ lang: 'PT' }),
+      openSettings: () => this.setState({ settings: true }), closeSettings: close, stop: e => e.stopPropagation(),
+      newGame: () => this.setState({ settings: false, screen: 'setup', move: '', sent: false }),
+      keys: Object.keys(s.keys).map(k => ({ label: k, value: s.keys[k], type: s.show[k] ? 'text' : 'password', btn: s.show[k] ? 'HIDE' : 'SHOW', onChange: onKey(k), toggle: () => this.setState(st => ({ show: { ...st.show, [k]: !st.show[k] } })) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

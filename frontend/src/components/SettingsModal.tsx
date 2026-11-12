@@ -60,6 +60,14 @@ export function SettingsModal({ onClose, onNewGame }: Props) {
       >
         <h2 id={titleId} className="modal-title">
           {t("settings.title")}
+          <button
+            type="button"
+            className="modal-close"
+            aria-label={t("settings.cancel")}
+            onClick={onClose}
+          >
+            ✕
+          </button>
         </h2>
 
         <section className="settings-section">

@@ -9,6 +9,13 @@ export const LOCALE_LABELS: Record<Locale, string> = {
 
 type Messages = {
   "status.setup": string;
+  "brand.tagline": string;
+  "brand.homeTitle": string;
+  "brand.homeBody": string;
+  "brand.homeConfirm": string;
+  "brand.homeStay": string;
+  "setup.eyebrow": string;
+  "game.theater": string;
   "status.inProgress": string;
   "status.ended": string;
   "status.victory": string;
@@ -35,6 +42,7 @@ type Messages = {
   "setup.blurb": string;
   "setup.seats": string;
   "setup.model": string;
+  "setup.modelCustom": string;
   "setup.temp": string;
   "setup.customName": string;
   "setup.customNamePlaceholder": string;
@@ -99,6 +107,8 @@ type Messages = {
   "categoryDesc.cs": string;
 
   "ledger.title": string;
+  "ledger.heading": string;
+  "ledger.turnLabel": string;
 
   "transmission.head": string;
   "transmission.introHead": string;
@@ -158,6 +168,14 @@ export type MessageKey = keyof Messages;
 const enUS: Messages = {
   "status.setup": "SETUP",
   "status.inProgress": "IN PROGRESS",
+  "brand.tagline": "AGI AND HUMAN SURVIVAL",
+  "brand.homeTitle": "Leave this game?",
+  "brand.homeBody":
+    "Going back to the start page abandons the game in progress. Your current game will be lost.",
+  "brand.homeConfirm": "Leave game",
+  "brand.homeStay": "Stay",
+  "setup.eyebrow": "// MISSION BRIEFING",
+  "game.theater": "Theater view",
   "status.ended": "ENDED",
   "status.victory": "VICTORY · {winner}",
   "status.draw": "DRAW",
@@ -186,6 +204,7 @@ const enUS: Messages = {
     "Change or add more factions, pick your seat, set custom names, and tune Imprevisibility.",
   "setup.seats": "Participants",
   "setup.model": "Model",
+  "setup.modelCustom": "Custom…",
   "setup.temp": "Imprevisibility",
   "setup.customName": "Custom name",
   "setup.customNamePlaceholder": "Optional callsign",
@@ -202,7 +221,7 @@ const enUS: Messages = {
   "setup.noMoreRoles": "All roles are in play",
   "setup.creating": "Creating…",
   "setup.start": "Start Game",
-  "setup.estCost": "Est. token cost",
+  "setup.estCost": "Token cost",
   "setup.estCostValue": "~{cost} · {turns} turns",
   "setup.estCostHint":
     "Rough USD for all AI seat moves + Narrator across a full game at gpt-4o-mini rates. Human seats are free. Early wins cost less.",
@@ -254,7 +273,7 @@ const enUS: Messages = {
   "roleStart.delayedWin":
     "Cannot win before turn 30.",
   "roleStart.narrator":
-    "Start: not scored. Adjudicates moves and redistributes the zero-sum ledger each month.",
+    "Adjudicates moves and redistributes the zero-sum ledger each month.",
 
   "category.pc": "Computing Power",
   "category.rc": "Resources",
@@ -273,6 +292,8 @@ const enUS: Messages = {
     "Capacity to impose outcomes by force or threat: armed forces, cyber offense, law enforcement, territorial control",
 
   "ledger.title": "Turn {turn} - {month} {year}",
+  "ledger.heading": "Dominion ledger",
+  "ledger.turnLabel": "TURN",
 
   "transmission.head": "NARRATOR TRANSMISSION — TURN {turn}",
   "transmission.introHead": "NARRATOR TRANSMISSION — INTRO",
@@ -293,7 +314,7 @@ const enUS: Messages = {
   "move.submit": "Transmit Move",
   "move.offSubmit": "Ask Narrator",
   "move.offBadge": "/OFF",
-  "move.resolving": "Resolving…({seconds})",
+  "move.resolving": "Waiting other players…({seconds})",
   "move.replaySubmit": "Replace & Resolve",
 
   "game.endedTitle": "Game over",
@@ -334,6 +355,14 @@ const enUS: Messages = {
 const ptBR: Messages = {
   "status.setup": "SETUP",
   "status.inProgress": "EM ANDAMENTO",
+  "brand.tagline": "AGI E SOBREVIVÊNCIA HUMANA",
+  "brand.homeTitle": "Sair desta partida?",
+  "brand.homeBody":
+    "Voltar à página inicial abandona a partida em andamento. A partida atual será perdida.",
+  "brand.homeConfirm": "Sair da partida",
+  "brand.homeStay": "Continuar",
+  "setup.eyebrow": "// BRIEFING DA MISSÃO",
+  "game.theater": "Visão do teatro",
   "status.ended": "ENCERRADO",
   "status.victory": "VITÓRIA · {winner}",
   "status.draw": "EMPATE",
@@ -362,6 +391,7 @@ const ptBR: Messages = {
     "Altere ou adicione facções, escolha seu assento, defina nomes customizados e ajuste a Imprevisibilidade.",
   "setup.seats": "Participantes",
   "setup.model": "Modelo",
+  "setup.modelCustom": "Personalizado…",
   "setup.temp": "Imprevisibilidade",
   "setup.customName": "Customizar Nome",
   "setup.customNamePlaceholder": "Codinome opcional",
@@ -378,7 +408,7 @@ const ptBR: Messages = {
   "setup.noMoreRoles": "Todos os papéis estão em jogo",
   "setup.creating": "Criando…",
   "setup.start": "Iniciar Partida",
-  "setup.estCost": "Custo est. de tokens",
+  "setup.estCost": "Custo de tokens",
   "setup.estCostValue": "~{cost} · {turns} turnos",
   "setup.estCostHint":
     "USD aproximado para todos os movimentos de IA + Narrator em uma partida completa nas taxas do gpt-4o-mini. Assentos humanos não custam. Vitórias antecipadas custam menos.",
@@ -430,7 +460,7 @@ const ptBR: Messages = {
   "roleStart.delayedWin":
     "Não pode vencer antes do turno 30.",
   "roleStart.narrator":
-    "Início: sem placar. Arbitra jogadas e redistribui o ledger zero-sum a cada mês.",
+    "Arbitra jogadas e redistribui o ledger zero-sum a cada mês.",
 
   "category.pc": "Poder Computacional",
   "category.rc": "Recursos",
@@ -449,6 +479,8 @@ const ptBR: Messages = {
     "Capacidade de impor resultados por força ou ameaça: forças armadas, ciberofensiva, aplicação da lei, controle territorial",
 
   "ledger.title": "Turno {turn} - {month} {year}",
+  "ledger.heading": "Registro de domínio",
+  "ledger.turnLabel": "TURNO",
 
   "transmission.head": "TRANSMISSÃO NARRATOR — TURNO {turn}",
   "transmission.introHead": "TRANSMISSÃO NARRATOR — INTRO",

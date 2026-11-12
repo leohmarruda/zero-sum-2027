@@ -73,6 +73,10 @@ async def _complete_via_litellm(
 
 API_KEY_PROVIDERS: frozenset[str] = frozenset({"openrouter", "openai", "anthropic"})
 
+# Vendors that can be reached directly. When the user supplies such a key, a
+# model written as "openrouter/<vendor>/<name>" is sent straight to the vendor.
+DIRECT_VENDORS: frozenset[str] = frozenset({"openai", "anthropic"})
+
 
 class LlmCallClient:
     """Wraps llmcall.acall when available; otherwise litellm.acompletion.
@@ -94,6 +98,25 @@ class LlmCallClient:
         provider = model.split("/", 1)[0].lower()
         return self._api_keys.get(provider) or None
 
+    def _route(self, model: str) -> tuple[str, str | None]:
+        """Return (model, api_key) to use for this call.
+
+        Direct OpenAI/Anthropic keys take priority over OpenRouter: if the model
+        is an OpenRouter-wrapped OpenAI/Anthropic model and the user supplied
+        that vendor's key, rewrite it to the native model name and use the key.
+        """
+        provider, _, rest = model.partition("/")
+        if provider.lower() == "openrouter":
+            vendor, _, name = rest.partition("/")
+            vendor = vendor.lower()
+            if name and vendor in DIRECT_VENDORS and self._api_keys.get(vendor):
+                if vendor == "anthropic":
+                    # OpenRouter slugs use dots (claude-haiku-5.5); Anthropic's
+                    # native ids use dashes (claude-haiku-5-5).
+                    name = name.replace(".", "-")
+                return f"{vendor}/{name}", self._api_keys[vendor]
+        return model, self._key_for(model)
+
     async def complete(
         self,
         model: str,
@@ -106,7 +129,7 @@ class LlmCallClient:
         timeout_seconds: float = 60.0,
         dry_run: bool = False,
     ) -> LLMOutput:
-        api_key = self._key_for(model)
+        model, api_key = self._route(model)
         acall_fn = self._acall if self._acall is not None else _import_acall()
         if acall_fn is None:
             return await _complete_via_litellm(
